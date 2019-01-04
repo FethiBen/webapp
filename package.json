@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "npm start",
+    "postinstall": "bower install && grunt build"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
@@ -16,6 +17,7 @@
     "firebase": "^5.7.1",
     "firebase-admin": "^6.4.0",
     "morgan": "~1.9.0",
+    "multer": "^1.4.1",
     "serve-favicon": "~2.4.5"
   }
 }
