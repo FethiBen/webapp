@@ -1,0 +1,432 @@
+<style>
+#container #link-products, #container #linked-products {
+	margin: 0px auto;
+	background-color: #eff3f4;
+	border-radius: 8px;
+	padding: 15px;
+}
+#link-products .form-row {
+	text-align: center;
+	color: #515a5b;
+}
+.easy-autocomplete {
+	width: 100% !important;
+}
+#client-search-loader, #device-search-loader {
+	color: #3095ba;
+	margin: 1px;
+	position: absolute;
+	right: 10px;
+	top: 40px;
+	display: none;
+}
+
+.easy-autocomplete-container ul {
+	z-index: 15;
+	position: absolute;
+	padding-left: 0px;
+	text-align: left;
+	list-style-type: none;
+	width: 100%;
+}
+.easy-autocomplete-container ul li {
+	width: 100%;
+	padding: 6px;
+	background: white;
+	display: block;
+}
+.easy-autocomplete-container ul li:hover {
+	background: #d7e6e8;
+	cursor: pointer;
+}
+.auto-search-item {
+	width: 100%;
+	border-bottom: 1px solid gray;
+}
+.auto-search-item p {
+	margin-bottom: 3px;
+}
+.auto-search-item span {
+	font-size: 85%;
+	color: gray;
+}
+#link-products-submit {
+	margin: 10px 5px 0px 0px;
+	width: 100%;
+	height: 45px;
+	border-radius: 15px;
+	cursor: pointer;
+	padding: 5px 3px;
+	background: white;
+	color: #0ea3b7;
+	border: 1px solid #0ea3b7;
+	font-size: 120%;
+	text-align: center;
+}
+#link-products-submit:hover {
+	background: #e9ecef;
+	color: #00d4ff;
+	border: 1px solid #407c84;
+}
+
+#linked-products #search-linked-products{
+	text-align: center;
+	padding-bottom: 5px;
+	border-bottom: 1px solid gray;
+}
+#client-uid-search, #device-ref-search {
+	display: inline-block;
+}
+#linked-products input {
+	border-radius: 5px;
+	width: 100%;
+	height: 45px;
+	padding: 2px 6px;
+	border: none;
+	border-bottom: 1px solid #15e2ed;
+}
+#linked-products input:focus {
+	box-shadow: 0 0 10px #9ecaed;
+}
+#linked-products table {
+	width: 100%;
+}
+#linked-products table tr {
+	height: 45px;
+}
+#linked-products table tbody tr:hover {
+	background: #f5f5f5;
+}
+#linked-products table thead {
+	color: #0099cc;
+	border-bottom: 1px solid gray;
+	background: #f5f5f5;
+}
+.device-remove {
+	cursor: pointer;
+	padding: 3px;
+	font-size: 25px;
+	color: gray;
+}
+.device-remove:hover {
+	color: #9fbfdf;
+	border-radius: 3px;
+}
+
+
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 575.98px) {
+	.linked-device-ref, .linked-device-clientuid, .linked-device-timestamp {
+		display: none;
+	}
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media screen and (min-width: 576px) and (max-width: 767.98px) {
+	.linked-device-ref, .linked-device-clientuid, .linked-device-timestamp {
+		display: none;
+	}
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+	.linked-device-ref, .linked-device-clientuid, .linked-device-timestamp {
+		display: none;
+	}
+}
+
+/* Large devices (desktops, 992px and up) */
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+	.linked-device-ref, .linked-device-clientuid, .linked-device-timestamp {
+		display: ;
+	}
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+	.linked-device-ref, .linked-device-clientuid, .linked-device-timestamp {
+		display: ;
+	}
+}
+</style>
+<div id="container">
+	<div id="link-products" class="col-12 col-sm-12 col-md-11 col-lg-10 col-xl-9">
+		<div class="loader"></div> 
+		<div class="form-row">
+		    <div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+		      <label for="client-search">Client Name</label>
+		      <div>
+		      	<input type="text" class="form-control" id="client-search-name" placeholder="Client Name">
+		      	<span id="client-search-loader"><i class="fa fa-spinner fa-spin" style="font-size:20px"></i></span>
+		      </div>
+		    </div>
+		    <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
+		      <label for="client-search-uid">Client UID</label>
+		      <input type="text" disabled class="form-control" id="client-search-uid" placeholder="Client UID">
+		    </div>
+	    </div>
+	    <div class="form-row">
+		    <div class="col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
+		      <label for="device-search">Device Name</label>
+		      <div>
+		      	<input type="text" class="form-control" id="device-search-name" placeholder="Device Name">
+		      	<span id="device-search-loader"><i class="fa fa-spinner fa-spin" style="font-size:20px"></i></span>
+		      </div>
+		    </div>
+		    <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
+		      <label for="device-search-ref">Device Ref</label>
+		      <input type="text" disabled class="form-control" id="device-search-ref" placeholder="Device Ref">
+		    </div>
+	    </div>
+	    <div class="form-row justify-content-end">
+	    	<div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2" id="link-products-submit">Link Product</div>
+	    </div>
+	</div>
+	<div style="width: 100%; height: 15px; background: transparent;"></div>
+	<div id="linked-products" class="col-12 col-sm-12 col-md-11 col-lg-10 col-xl-10">
+		<div id="search-linked-products">
+			<div class='col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5' id='client-uid-search'>
+				<input type="text" placeholder="Client UID"></div>
+		<div class='col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5' id='device-ref-search'>
+			<input type="text" placeholder="Device Reference"></div>
+		</div>
+		<table>
+			<thead>
+				<th>Doc ID</th>
+				<th>Device Ref</th>
+				<th>Client UID</th>
+				<th>Tiemstamp</th>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="sk-circle">
+  <div class="sk-circle1 sk-child"></div>
+  <div class="sk-circle2 sk-child"></div>
+  <div class="sk-circle3 sk-child"></div>
+  <div class="sk-circle4 sk-child"></div>
+  <div class="sk-circle5 sk-child"></div>
+  <div class="sk-circle6 sk-child"></div>
+  <div class="sk-circle7 sk-child"></div>
+  <div class="sk-circle8 sk-child"></div>
+  <div class="sk-circle9 sk-child"></div>
+  <div class="sk-circle10 sk-child"></div>
+  <div class="sk-circle11 sk-child"></div>
+  <div class="sk-circle12 sk-child"></div>
+</div>
+<script>
+
+var interval = setInterval(function(){ console.log("Hello"); }, 3000);
+clearInterval(interval);
+
+$(document ).ready(function() {
+	loadLinkedDevices();
+
+	$("#client-uid-search input").keyup(function() {
+		searchClients($(this).val(), '.linked-device-clientuid');
+	});
+
+	$("#device-ref-search input").keyup(function() {
+		searchClients($(this).val(), '.linked-device-ref')
+	});
+
+	$(document).on('click', 'table .linked-devices .linked-device-edit', function(event) {
+		var docid = $(this).parents('.linked-devices').find('.linked-device-docID').text();
+
+		$.post('/console/deletelink', {'docID': docid}, function(data) {
+			$('.alert-success').text("Link deleted").show();
+			loadLinkedDevices();
+			setTimeout(function() {
+				$('.alert-success').hide();
+			}, 1500);
+		}).fail(function(error) {
+			$('.alert-danger').text(error).show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+		});
+	});
+
+	$('#link-products-submit').click(function(event) {
+		var uid = $('#client-search-uid').val(), ref = $('#device-search-ref').val();	
+		if(uid === '' || ref === '') {
+			$('.alert-danger').text("Please select a device and client!").show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+			return ;
+		}
+		var data = {
+			'device_ref': ref,
+			'client_uid': uid
+		}
+		$('.form-row').hide();
+		$('#link-products .loader').show();
+		$.post('/console/addlink', data, function(data) {
+			$('.alert-success').text("Device Linked!").show();
+			setTimeout(function() {
+				$('.alert-success').hide();
+			}, 1500);
+			$('#link-products input').val('');
+			$('.form-row').show();
+			$('#link-products .loader').hide();
+		}).fail(function(error) {
+			$('.alert-danger').text(error).show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+			$('.form-row').show();
+			$('#link-products .loader').hide();
+		});
+	});
+
+$( function() {
+	var options = {
+		url: function(phrase) {
+			return "/console/getclients";
+		},
+		getValue: function(element) {
+			return element.firstname+', '+element.lastname;
+		},
+		ajaxSettings: {
+		    dataType: "json",
+		    method: "POST",
+		    data: {
+		      dataType: "json"
+		    }
+	    },
+	    preparePostData: function(data) {
+		    $('#client-search-loader').show();
+		},
+		template: {
+			type: "custom",
+			method: function(value, item) {
+				return '<div class="auto-search-item"><div><p>'+value+'</p><span>UID: '+item.uid+'</span></div></div>';
+			}
+		},
+		list: {
+			onLoadEvent: function() {
+			},
+			onShowListEvent: function() {
+				$('#client-search-loader').hide();
+			},
+			onClickEvent: function() {
+				var uid = $("#client-search-name").getSelectedItemData().uid;
+				$('#client-search-uid').val(uid);
+			},	
+			showAnimation: {
+				type: "fade", //normal|slide|fade
+				time: 400,
+				callback: function() {}
+			},
+			hideAnimation: {
+				type: "slide", //normal|slide|fade
+				time: 400,
+				callback: function() {}
+			},
+			match: {
+				enabled: true
+			}
+		}
+	}
+    $( "#client-search-name" ).easyAutocomplete(options);
+} );
+
+$( function() {
+	var options = {
+		url: function(phrase) {
+			return "/console/getdevices";
+		},
+		getValue: function(element) {
+			return element.device_name;
+		},
+		ajaxSettings: {
+		    dataType: "json",
+		    method: "POST",
+		    data: {
+		      dataType: "json"
+		    }
+	    },
+		preparePostData: function(data) {
+			$('#device-search-loader').show();
+		},
+		template: {
+			type: "custom",
+			method: function(value, item) {
+				return '<div class="auto-search-item"><div><p>'+value+'</p><span>Ref: '+item.device_ref+'</span></div></div>';
+			}
+		},
+		list: {
+			onLoadEvent: function() {
+			},
+			onShowListEvent: function() {
+				$('#device-search-loader').hide();
+			},
+			onClickEvent: function() {
+				var ref = $("#device-search-name").getSelectedItemData().device_ref;
+				$('#device-search-ref').val(ref);
+			},	
+			showAnimation: {
+				type: "fade", //normal|slide|fade
+				time: 400,
+				callback: function() {}
+			},
+			hideAnimation: {
+				type: "slide", //normal|slide|fade
+				time: 400,
+				callback: function() {}
+			},
+			match: {
+				enabled: true
+			}
+		}
+	}
+    $( "#device-search-name" ).easyAutocomplete(options);
+} );  
+});
+
+
+function loadLinkedDevices() {
+	$(".sk-circle").css({"visibility": "visible"});
+	$.post('/console/getproducts', function(data) {
+		$('.linked-devices').remove();
+		$(".sk-circle").css({"visibility": "hidden"});
+		if(data.length > 0) {
+			data.forEach(function(device) {
+				$('#linked-products table tbody').append('\
+				<tr class="linked-devices">\
+		<td class="linked-device-docID">'+device.docID+'</td>\
+		<td class="linked-device-ref">'+device.device_ref+'</td>\
+		<td class="linked-device-clientuid">'+device.client_uid+'</td>\
+		<td class="linked-device-timestamp">'+device.timestamp+'</td>\
+		<td class="linked-device-edit"><span class="device-remove"><i class="fas fa-times"></i></sapn></td></tr>');
+			});
+		}
+		else {
+			$('#linked-products table tbody').append("No Data To Display!");
+		}	
+	}).fail(function(error) {
+		$('#linked-products table tbody').append(error);
+	});
+}
+
+function searchClients(txt, column) {
+	if(txt === "")
+		$('#linked-products table tr.linked-devices').show();
+	var re = new RegExp(txt);
+	$('#linked-products table tr.linked-devices').each(function(i) {
+		if($(this).find(column).text().toLowerCase().match(txt) === null ) {
+			$(this).hide();
+		}
+		else {
+			$(this).show();
+		}
+	});
+}
+
+</script>
+

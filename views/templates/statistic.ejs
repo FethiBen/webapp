@@ -1,0 +1,751 @@
+<style>
+#device_stat_data table {
+	width: 100%;
+	margin-bottom: 3px;
+}
+#device_stat_data table tr {
+  height: 45px;
+  text-align: center;
+}
+#device_stat_data table thead {
+  color: white;
+  background: #0097A7;
+  padding: 3px;
+  border-bottom: 2px solid #80DEEA;
+}
+#device_stat_data table thead tr {
+	border-bottom: 1px solid white;
+}
+#device_stat_data table tbody tr {
+  border-bottom: 1px solid #00838F;
+}
+#device_stat_data table tbody tr:hover {
+  background: #c2f0f0;
+  cursor: pointer;
+}
+#chart-device_select {
+	margin: 25px 0px;
+	text-align: center;
+	padding: 5px;
+}
+#chart-device_select input {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	padding-left: 8px;
+	color: gray;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+#chart-device_select select {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	padding-left: 8px;
+	color: gray;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+#chart-device_select #update-chart {
+	margin: 0px 5px;
+	color: #01579B;
+	padding: 3px;
+	text-align: center;
+	border: 1px solid #9ad0f5;
+	width: 150px;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #9ad0f5;
+
+}
+#chart-device_select #update-chart:hover {
+	background: #9ad0f5;
+	cursor: pointer;
+	color: white;
+	font-style: bold;
+	border: 1px solid white;
+}
+#charts {
+	margin: 15px 0px;
+}
+#charts .chart {
+	width: 100%;
+	margin: 15px 0px;
+}
+#charts .chart-title {
+	display: block;
+	margin: 5px 0px;
+	text-align: center;
+	font-size: 130%;
+	font-family: 'Times new romain', 'serif';
+}
+</style>
+
+<div id="container">
+	<div id="chart-device_select" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		<select class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" name="select" id="chart-selected-device">
+			<option value="null">No Device Selected</option>
+		</select>
+		<input class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" type="date" id="chart-data-date">
+		<input type="button" name="submit" id="update-chart" value="Update">
+	</div>
+	<div id="device_stat_data">
+		<table>
+			<thead>
+				<tr style="text-align: center;">
+					<th></th>
+					<th colspan="6" scope='colgroup' class="voltage-current">Voltage</th>
+					<th colspan="6" scope='colgroup' class="voltage-current">Current</th>
+					<th colspan="2" scope='colgroup' class="temperature">Temperature</th>
+				</tr>
+				<tr style="text-align: center;">
+					<th></th>
+					<th colspan="3" scope='col' class="voltage-current">Primary</th>
+					<th colspan="3" scope='col' class="voltage-current">Secondary</th>
+					<th colspan="3" scope='col' class="voltage-current">Primary</th>
+					<th colspan="3" scope='col' class="voltage-current">Secondary</th>
+					<th rowspan="2" class="temperature">Internal</th>
+					<th rowspan="2" class="temperature">External</th>
+				</tr>
+				<tr>
+					<th></th>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+	<div id="charts" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		<div class="chart">
+			<div class="chart-title">Primary Voltage</div>
+			<canvas id="pri-voltage-chart"></canvas>
+		</div>
+		<div class="chart">
+			<div class="chart-title">Secondary Voltage</div>
+			<canvas id="sec-voltage-chart"></canvas>
+		</div>
+		<div class="chart" >
+			<div class="chart-title">Primary Current</div>
+			<canvas id="pri-current-chart"></canvas>
+		</div>
+		<div class="chart" >
+			<div class="chart-title">Secondary Current</div>
+			<canvas id="sec-current-chart"></canvas>
+		</div>
+		<div class="chart" >
+			<div class="chart-title">Temperature</div>
+			<canvas id="temp-chart"></canvas>
+		</div>
+		<div class="chart" >
+			<div class="chart-title">Gas - Pressure</div>
+			<canvas id="gp-chart"></canvas>
+		</div>
+	</div>
+	
+	<div class="sk-circle">
+      <div class="sk-circle1 sk-child"></div>
+      <div class="sk-circle2 sk-child"></div>
+      <div class="sk-circle3 sk-child"></div>
+      <div class="sk-circle4 sk-child"></div>
+      <div class="sk-circle5 sk-child"></div>
+      <div class="sk-circle6 sk-child"></div>
+      <div class="sk-circle7 sk-child"></div>
+      <div class="sk-circle8 sk-child"></div>
+      <div class="sk-circle9 sk-child"></div>
+      <div class="sk-circle10 sk-child"></div>
+      <div class="sk-circle11 sk-child"></div>
+      <div class="sk-circle12 sk-child"></div>
+    </div>
+</div>
+
+
+<script>
+	var average = (array) => array.reduce((a, b) => a + b) / array.length;
+	var pri_voltage = [], sec_voltage = [], pri_current = [], sec_current = [], temperature = [], gp = [], upload = [];
+	upload = [];
+  	pri_voltage['p1'] = [];
+  	pri_voltage['p2'] = [];
+  	pri_voltage['p3'] = [];
+  	sec_voltage['p1'] = [];
+  	sec_voltage['p2'] = [];
+  	sec_voltage['p3'] = [];
+  	pri_current['p1'] = [];
+  	pri_current['p2'] = [];
+  	pri_current['p3'] = [];
+  	sec_current['p1'] = [];
+  	sec_current['p2'] = [];
+  	sec_current['p3'] = [];
+  	temperature['internal'] = [];
+  	temperature['external'] = [];
+  	gp['gas'] = [];
+  	gp['pressure'] = [];
+  	min = [], max = [], avg = [];
+
+  	var chart_pri_vol, chart_sec_vol, chart_pri_cur, chart_sec_cur, chart_temp, chart_gp;
+
+	$("#chart-device_select input[type=date]").attr({'max': new Date().toJSON().split('T')[0]});
+
+	$("#chart-device_select #update-chart").click(function(event) {
+		$("#container .sk-circle").css({"visibility": "visible"});
+		$("#device_stat_data table tbody").html("");
+		if($("#chart-selected-device").val() == "null" || $("#chart-data-date").val() == ""){
+			$('.alert-warning').text('Please provide a valid Device and Date').show();
+		      setTimeout(function() {
+		        $('.alert-warning').hide();
+		      }, 1500);
+		      $("#container .sk-circle").css({"visibility": "hidden"});
+		      return ;
+		}
+		var temp = $("#chart-data-date").val().split('-');
+		var date = parseInt(temp[2]).toString()+"/"+parseInt(temp[1]).toString()+"/"+temp[0].toString()
+		var data = {
+			'device_ref': $("#chart-selected-device").val(),
+			'date': date
+		}
+		$.post('/getdatedata/', data, function(data) {
+	      $("#container .sk-circle").css({"visibility": "hidden"});
+	      if(data.length > 0) {
+	      	data.sort((function (a, b) { return new Date(a.timestamp) - new Date(b.timestamp) }));
+	      	upload = [];
+	      	pri_voltage['p1'] = [];
+	      	pri_voltage['p2'] = [];
+	      	pri_voltage['p3'] = [];
+	      	sec_voltage['p1'] = [];
+	      	sec_voltage['p2'] = [];
+	      	sec_voltage['p3'] = [];
+	      	pri_current['p1'] = [];
+	      	pri_current['p2'] = [];
+	      	pri_current['p3'] = [];
+	      	sec_current['p1'] = [];
+	      	sec_current['p2'] = [];
+	      	sec_current['p3'] = [];
+	      	temperature['internal'] = [];
+	      	temperature['external'] = [];
+	      	gp['gas'] = [];
+	      	gp['pressure'] = [];
+  			min = [], max = [], avg = [];
+	        $.each(data, function (i, item) {
+			    pri_voltage['p1'].push(parseInt(item.pri_voltage_p1));
+		      	pri_voltage['p2'].push(parseInt(item.pri_voltage_p2));
+		      	pri_voltage['p3'].push(parseInt(item.pri_voltage_p3));
+		      	sec_voltage['p1'].push(parseInt(item.sec_voltage_p1));
+		      	sec_voltage['p2'].push(parseInt(item.sec_voltage_p2));
+		      	sec_voltage['p3'].push(parseInt(item.sec_voltage_p3));
+		      	pri_current['p1'].push(parseInt(item.pri_current_p1));
+		      	pri_current['p2'].push(parseInt(item.pri_current_p2));
+		      	pri_current['p3'].push(parseInt(item.pri_current_p3));
+		      	sec_current['p1'].push(parseInt(item.sec_current_p1));
+		      	sec_current['p2'].push(parseInt(item.sec_current_p2));
+		      	sec_current['p3'].push(parseInt(item.sec_current_p3));
+		      	temperature['internal'].push(parseInt(item.internal_temp));
+		      	temperature['external'].push(parseInt(item.external_temp));
+		      	gp['gas'].push(parseInt(item.gas));
+		      	gp['pressure'].push(parseInt(item.pressure));
+		      	upload.push(item.timestamp);
+			});
+			min.push(Math.min.apply(Math, pri_voltage['p1']));
+			min.push(Math.min.apply(Math, pri_voltage['p2']));
+			min.push(Math.min.apply(Math, pri_voltage['p3']));
+			min.push(Math.min.apply(Math, sec_voltage['p1']));
+			min.push(Math.min.apply(Math, sec_voltage['p2']));
+			min.push(Math.min.apply(Math, sec_voltage['p3']));
+			min.push(Math.min.apply(Math, pri_current['p1']));
+			min.push(Math.min.apply(Math, pri_current['p2']));
+			min.push(Math.min.apply(Math, pri_current['p3']));
+			min.push(Math.min.apply(Math, sec_current['p1']));
+			min.push(Math.min.apply(Math, sec_current['p2']));
+			min.push(Math.min.apply(Math, sec_current['p3']));
+			min.push(Math.min.apply(Math, temperature['internal']));
+			min.push(Math.min.apply(Math, temperature['external']));
+
+
+			max.push(Math.max.apply(Math, pri_voltage['p1']));
+			max.push(Math.max.apply(Math, pri_voltage['p2']));
+			max.push(Math.max.apply(Math, pri_voltage['p3']));
+			max.push(Math.max.apply(Math, sec_voltage['p1']));
+			max.push(Math.max.apply(Math, sec_voltage['p2']));
+			max.push(Math.max.apply(Math, sec_voltage['p3']));
+			max.push(Math.max.apply(Math, pri_current['p1']));
+			max.push(Math.max.apply(Math, pri_current['p2']));
+			max.push(Math.max.apply(Math, pri_current['p3']));
+			max.push(Math.max.apply(Math, sec_current['p1']));
+			max.push(Math.max.apply(Math, sec_current['p2']));
+			max.push(Math.max.apply(Math, sec_current['p3']));
+			max.push(Math.max.apply(Math, temperature['internal']));
+			max.push(Math.max.apply(Math, temperature['external']));
+
+			avg.push(average(pri_voltage['p1']));
+			avg.push(average(pri_voltage['p2']));
+			avg.push(average(pri_voltage['p3']));
+			avg.push(average(sec_voltage['p1']));
+			avg.push(average(sec_voltage['p2']));
+			avg.push(average(sec_voltage['p3']));
+			avg.push(average(pri_current['p1']));
+			avg.push(average(pri_current['p2']));
+			avg.push(average(pri_current['p3']));
+			avg.push(average(sec_current['p1']));
+			avg.push(average(sec_current['p2']));
+			avg.push(average(sec_current['p3']));
+			avg.push(average(temperature['internal']));
+			avg.push(average(temperature['external']));
+
+			console.log(min, max ,avg);
+			var tData = "";
+			for(var i=0; i<min.length; i++) {
+				tData += "<td>"+min[i].toFixed(2)+"</td>";
+			}
+			$("#device_stat_data table tbody").append("<tr><th scope='row'>Min</th>"+tData+"</tr>");
+
+			var tData = "";
+			for(var i=0; i<avg.length; i++) {
+				tData += "<td>"+avg[i].toFixed(2)+"</td>";
+			}
+			$("#device_stat_data table tbody").append("<tr><th scope='row'>Avg</th>"+tData+"</tr>");
+
+			var tData = "";
+			for(var i=0; i<max.length; i++) {
+				tData += "<td>"+max[i].toFixed(2)+"</td>";
+			}
+			$("#device_stat_data table tbody").append("<tr><th scope='row'>Max</th>"+tData+"</tr>");
+
+			try {
+				chart_pri_vol.clear();
+				chart_sec_vol.clear();
+				chart_pri_cur.clear();
+				chart_sec_cur.clear();
+				chart_temp.clear();
+				chart_gp.clear();
+
+				chart_pri_vol.destroy();
+				chart_sec_vol.destroy();
+				chart_pri_cur.destroy();
+				chart_sec_cur.destroy();
+				chart_temp.destroy();
+				chart_gp.destroy();
+			}
+			catch(err) {
+				console.log(err);
+			}
+
+			$("iframe").remove();
+
+			var pri_vol_chart = document.getElementById('pri-voltage-chart').getContext('2d');
+			chart_pri_vol = new Chart(pri_vol_chart, {
+			    // The type of chart we want to create
+			    type: 'line',
+
+			    // The data for our dataset
+			    data: {
+			        labels: upload,
+			        datasets: [{
+			            label: "Phase 1",
+			            borderColor: '#0288D1',
+			            data: pri_voltage['p1'],
+						fill: false,
+			        }, {
+			            label: "Phase 2",
+			            borderColor: '#0097A7',
+			            data: pri_voltage['p2'],
+						fill: false,
+			        }, {
+			            label: "Phase 3",
+			            borderColor: '#00796B',
+			            data: pri_voltage['p3'],
+						fill: false,
+			        }]
+			    },
+
+			    // Configuration options go here
+			    options:  {
+					responsive: true,
+					title: {
+						display: true,
+						text: 'Primary Voltage'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Upload Time'
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Voltage V'
+							},
+							ticks: {
+								beginAtZero:false
+							}
+						}]
+					}
+				}
+			});
+
+			var ctx = document.getElementById('sec-voltage-chart').getContext('2d');
+			chart_sec_vol = new Chart(ctx, {
+			    // The type of chart we want to create
+			    type: 'line',
+
+			    // The data for our dataset
+			    data: {
+			        labels: upload,
+			        datasets: [{
+			            label: "Phase 1",
+			            borderColor: '#388E3C',
+			            data: sec_voltage['p1'],
+						fill: false,
+			        }, {
+			            label: "Phase 2",
+			            borderColor: '#689F38',
+			            data: sec_voltage['p2'],
+						fill: false,
+			        }, {
+			            label: "Phase 3",
+			            borderColor: '#AFB42B',
+			            data: sec_voltage['p3'],
+						fill: false,
+			        }]
+			    },
+
+			    // Configuration options go here
+			    options:  {
+					responsive: true,
+					title: {
+						display: true,
+						text: 'Secondary Voltage'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Upload Time'
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Voltage V'
+							}
+						}]
+					}
+				}
+			});
+
+			var ctx = document.getElementById('pri-current-chart').getContext('2d');
+			chart_pri_cur = new Chart(ctx, {
+			    // The type of chart we want to create
+			    type: 'line',
+
+			    // The data for our dataset
+			    data: {
+			        labels: upload,
+			        datasets: [{
+			            label: "Phase 1",
+			            borderColor: '#0288D1',
+			            data: pri_current['p1'],
+						fill: false,
+			        }, {
+			            label: "Phase 2",
+			            borderColor: '#0097A7',
+			            data: pri_current['p2'],
+						fill: false,
+			        }, {
+			            label: "Phase 3",
+			            borderColor: '#00796B',
+			            data: pri_current['p3'],
+						fill: false,
+			        }]
+			    },
+
+			    // Configuration options go here
+			    options:  {
+					responsive: true,
+					title: {
+						display: true,
+						text: 'Primary Current'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Upload Time'
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Current A'
+							}
+						}]
+					}
+				}
+			});
+
+			var ctx = document.getElementById('sec-current-chart').getContext('2d');
+			var chart_sec_cur = new Chart(ctx, {
+			    // The type of chart we want to create
+			    type: 'line',
+
+			    // The data for our dataset
+			    data: {
+			        labels: upload,
+			        datasets: [{
+			            label: "Phase 1",
+			            borderColor: '#388E3C',
+			            data: sec_current['p1'],
+						fill: false,
+			        }, {
+			            label: "Phase 2",
+			            borderColor: '#689F38',
+			            data: sec_current['p2'],
+						fill: false,
+			        }, {
+			            label: "Phase 3",
+			            borderColor: '#AFB42B',
+			            data: sec_current['p3'],
+						fill: false,
+			        }]
+			    },
+
+			    // Configuration options go here
+			    options:  {
+					responsive: true,
+					title: {
+						display: true,
+						text: 'Secondary Current'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Upload Time'
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Current A'
+							}
+						}]
+					}
+				}
+			});
+
+			var ctx = document.getElementById('temp-chart').getContext('2d');
+			var chart_temp = new Chart(ctx, {
+			    // The type of chart we want to create
+			    type: 'line',
+
+			    // The data for our dataset
+			    data: {
+			        labels: upload,
+			        datasets: [{
+			            label: "Internal",
+			            borderColor: '#F4511E',
+			            data: temperature['internal'],
+						fill: false,
+			        }, {
+			            label: "External",
+			            borderColor: '#FBC02D',
+			            data: temperature['external'],
+						fill: false,
+			        }]
+			    },
+
+			    // Configuration options go here
+			    options:  {
+					responsive: true,
+					title: {
+						display: true,
+						text: 'Temperature'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Upload Time'
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Temperature °C'
+							}
+						}]
+					}
+				}
+			});
+
+			var ctx = document.getElementById('gp-chart').getContext('2d');
+			var chart_gp = new Chart(ctx, {
+			    // The type of chart we want to create
+			    type: 'bar',
+
+			    // The data for our dataset
+			    data: {
+			        labels: upload,
+			        datasets: [{
+			            label: "Gas",
+			            backgroundColor: '#BCAAA4',
+			            borderColor: '#795548',
+			            borderWidth: 1,
+			            data: gp['gas'],
+			        }, {
+			            label: "Pressure",
+			            backgroundColor: "#B0BEC5",
+			            borderColor: '#607D8B',
+			            borderWidth: 1,
+			            data: gp['pressure'],
+			        }]
+			    },
+
+			    // Configuration options go here
+			    options:  {
+					responsive: true,
+					legend: {
+						position: 'top',
+					},
+					title: {
+						display: true,
+						text: 'Gas - Pressure'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Upload Time'
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Value'
+							}
+						}]
+					}
+				}
+			});
+			
+	      }
+	      else {
+	        
+	      }
+	    }).fail(function(error) {
+	    	console.log(error);
+	      $("#container .sk-circle").css({"visibility": "hidden"});
+	      $('.alert-danger').text('Could not get data').show();
+	      setTimeout(function() {
+	        $('.alert-danger').hide();
+	      }, 1500);
+	    });
+	    
+	});
+
+	$(document ).ready(function() {
+	$("#container > .sk-circle").css({"visibility": "visible"});
+	data = {
+		'client_uid': user.uid
+	}
+    $.post('/getUserDevices/', data, function(data) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      if(data.length > 0) {
+        $.each(data, function (i, item) {
+		    $('#chart-selected-device').append($('<option>', { 
+		        value: item.device_ref,
+		        text : item.device_ref 
+		    }));
+		});
+      }
+      else {
+        
+      }
+
+    }).fail(function(error) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      $('.alert-danger').text('Could not get data').show();
+      setTimeout(function() {
+        $('.alert-danger').hide();
+      }, 1500);
+    });
+});
+
+
+</script>

@@ -1,0 +1,273 @@
+<style>
+#container div {
+	margin: 0px auto;
+}
+#client-search {
+	background: white;
+	border-radius: 5px;
+	margin-bottom: 10px !important;
+	padding: 5px;
+}
+#client-search div {
+	text-align: center;
+	margin: 2%;
+	display: inline-block;
+	height: 60px;
+}
+#client-search input {
+	margin-top: 8px;
+	border: none;
+	border-bottom: 1px solid #ccf2ff;
+	border-radius: 3px;
+	height: 35px;
+	width: 100%;
+}
+#client-search input:hover {
+	border: 1px solid #e0ebeb;
+}
+#client-search input:focus {
+	border: 1px solid #99e6e6;
+}
+
+#client-table {
+	padding: 5px;
+	background-color: white;
+	border-radius: 0px 0px 8px 8px;
+}
+#client-table table {
+	width: 100%;
+}
+#client-table table tr {
+	height: 45px;
+}
+#client-table table tbody tr:hover {
+	background: #f5f5f5;
+}
+#client-table table thead {
+	color: #0099cc;
+	border-bottom: 1px solid gray;
+	background: #f5f5f5;
+}
+.supervisor, .admin, .disable, .modify, .copy {
+	cursor: pointer;
+	padding: 3px;
+	font-size: 25px;
+}
+.disable, .modify, .copy {
+	color: gray;
+}
+.supervisor:hover, .admin:hover, .disable:hover, .modify:hover, .copy:hover {
+	color: #9fbfdf;
+	border-radius: 3px;
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 575.98px) {
+	.client-name, .client-company, .client-uid {
+		display: none;
+	}
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media screen and (min-width: 576px) and (max-width: 767.98px) {
+	.client-name, .client-company, .client-uid {
+		display: none;
+	}
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+	.client-name, .client-company, .client-uid {
+		display: none;
+	}
+}
+
+/* Large devices (desktops, 992px and up) */
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+	.client-name, .client-company, .client-uid {
+		display: ;
+	}
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+	.client-name, .client-company, .client-uid {
+		display: ;
+	}
+}
+
+</style>
+
+<div id="container">
+	<div id='client-search' class='col-12 col-sm-12 col-md-11 col-lg-10 col-xl-8'>
+		<div class='col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3' id='company-search'><input type="text" placeholder="Company Name"></div>
+		<div class='col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3' id='email-search'><input type="text" placeholder="Email address"></div>
+		<div class='col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3' id='uid-search'><input type="text" placeholder="User UID"></div>
+	</div>
+	<div id='client-table' class='col-12 col-sm-12 col-md-12 col-lg-11 col-xl-11'>
+		<table>
+			<thead>
+				<tr>
+					<th>Privilieges</th>
+					<th class="client-company">Company</th>
+					<th class="client-name">Name</th>
+					<th>Email</th>
+					<th class="client-uid">UID</th>
+					<th>Edit</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="sk-circle">
+  <div class="sk-circle1 sk-child"></div>
+  <div class="sk-circle2 sk-child"></div>
+  <div class="sk-circle3 sk-child"></div>
+  <div class="sk-circle4 sk-child"></div>
+  <div class="sk-circle5 sk-child"></div>
+  <div class="sk-circle6 sk-child"></div>
+  <div class="sk-circle7 sk-child"></div>
+  <div class="sk-circle8 sk-child"></div>
+  <div class="sk-circle9 sk-child"></div>
+  <div class="sk-circle10 sk-child"></div>
+  <div class="sk-circle11 sk-child"></div>
+  <div class="sk-circle12 sk-child"></div>
+</div>
+
+<script>
+	$("#company-search input").keyup(function() {
+		var txt = $(this).val();
+		searchClients(txt, '.client-company');
+	});
+
+	$("#email-search input").keyup(function() {
+		var txt = $(this).val();
+		searchClients(txt, '.client-email');
+	});
+
+	$("#uid-search input").keyup(function() {
+		var txt = $(this).val();
+		searchClients(txt, '.client-uid');
+	});
+
+$(document ).ready(function() {
+	clientsData();
+
+	$(document).on('click', '#client-table table .client-privilieges .admin', function(event) {
+		var uid = $(this).parent().parent().find('.client-uid').text().split(' ')[0];
+		var admin = true;
+		if($(this).attr('admin') == "true")
+			admin = false;
+		
+		$.post('/console/setadminclaims',{uid: uid, admin: admin}, function(data) {
+			$('.alert-success').text("Claims added, Please allow some to for it to take affect").show();
+			setTimeout(function() {
+				$('.alert-success').hide();
+			}, 1500);
+			$( ".clients-accounts" ).hide().remove();
+			clientsData();
+		}).fail(function(data) {
+			$('.alert-danger').text("Could not add claims").show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+		});
+	});
+
+	$(document).on('click', '#client-table table .client-privilieges .supervisor', function(event) {
+		var uid = $(this).parent().parent().find('.client-uid').text().split(' ')[0];
+		var supervisor = true;
+		if($(this).attr("supervisor") == "true")
+			supervisor = false;
+		
+		$.post('/console/setsupervisorclaims',{uid: uid, supervisor: supervisor}, function(data) {
+			$('.alert-success').text("Claims added, Please allow some to for it to take affect").show();
+			setTimeout(function() {
+				$('.alert-success').hide();
+			}, 1500);
+			$( ".clients-accounts" ).hide().remove();
+			clientsData();
+		}).fail(function(data) {
+			$('.alert-danger').text("Could not add claims").show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+		});
+	});
+
+	$(document).on('click', '#client-table table .client-uid .copy', function(event) {
+		var uid = $(this).parent().text();
+		copyToClipboard(uid.split(' ')[0]);
+		$('.alert-success').text("Text Copied To Clipboard").show();
+		setTimeout(function() {
+			$('.alert-success').hide();
+		}, 1500);
+	});
+
+	$(document).on('click', '#client-table table .client-edit .modify', function(event) {
+		clientsData();
+	});
+
+	$(document).on('click', '#client-table table .client-edit .disable', function(event) {
+		var uid = $(this).parent().parent().find('.client-uid').text().split(' ')[0];
+
+		$.post('/console/disable',{uid: uid}, function(data) {
+			$('.alert-success').text("Account Disabled").show();
+			clientsData();
+			setTimeout(function() {
+				$('.alert-success').hide();
+			}, 1500);
+		}).fail(function(data) {
+			$('.alert-danger').text("Could not disable account").show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+		});
+	});
+});
+
+function clientsData() {
+	$(".sk-circle").css({"visibility": "visible"});
+	$.post('/console/getclients', function(data) {
+		$(".sk-circle").css({"visibility": "hidden"});
+		if(data.length > 0) {
+			data.forEach(function(user) {
+				var admin = (String(user.admin) == 'true')? "#E6E600":"#b3cccc";
+				var supervisor = (String(user.supervisor) == 'true')? "#E6E600":"#b3cccc";
+				var disabled = (String(user.disabled) == 'true')? " <i title=\"Account Disabled\" class=\"fas fa-lock\"></i>":"";
+
+				$('#client-table table tbody').append('\
+		<tr class="clients-accounts"><td class="client-privilieges"><span class="admin" admin='+user.admin+'><i style="color: '+admin+';" title="Admin" class="fas fa-star"></i></span> <span class="supervisor" supervisor='+user.supervisor+'><i style="color: '+supervisor+';" title="supervisor" class="fas fa-certificate"></i></sapn>'+disabled+'</td>\
+		<td class="client-company">'+user.Company+'</td>\
+		<td class="client-name">'+user.firstname+" "+user.lastname+'</td>\
+		<td class="client-email">'+user.email+'</td>\
+		<td class="client-uid">'+user.uid+' <span class="copy"><i title="Copy UID" class="fas fa-copy"></i></span></td>\
+		<td class="client-edit"><span class="modify"><i title="Edit account" class="fas fa-edit"></i></span> <span class="disable"><i title="Disable account" class="fas fa-ban"></i></sapn></td></tr>');
+			});
+		}
+		else {
+			$('#client-table table tbody').append("No Data To Display!");
+		}	
+	}).fail(function(data) {
+		$(".sk-circle").css({"visibility": "hidden"});
+		$('#client-table table tbody').append('Could Not Get User Data');
+	});
+}
+
+function searchClients(txt, column) {
+	if(txt == "")
+		$('#client-table table tr.clients-accounts').show();
+	var re = new RegExp(txt);
+	$('#client-table table tr.clients-accounts').each(function(i) {
+	if($(this).find(column).text().toLowerCase().match(txt) == null ) {
+			$(this).hide();
+		}
+		else {
+			$(this).show();
+		}
+	});
+}
+</script>

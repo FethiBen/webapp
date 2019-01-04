@@ -1,0 +1,391 @@
+<style>
+#container > div {
+	margin: 0px auto;
+}
+#add-device {
+	background: transparent;
+	margin: 0px auto;
+}
+#add-device #add, #add-device #add-form {
+	display: inline-block;
+	margin: 0px auto;
+	height: 100%;
+	background: white;
+	border-radius: 5px;
+	padding: 5px;
+	overflow: hidden;
+	vertical-align: center;
+}
+#add-device #add {
+	height: 200px;
+	cursor: pointer;
+	text-align: center;
+	padding-top: 15px;
+	color: #00ccff;
+}
+#add-device #add:hover {
+	background: #00ccff;
+	color: white;
+	border: 1px solid white;
+}
+#add-device #add span {
+	font-size: 55px;
+}
+
+#add-form {
+	text-align: center;
+}
+#add-form #form-close {
+	position: absolute;
+	cursor: pointer;
+	top: 5px;
+	right: 7px;
+	z-index: 10;
+}
+#add-form #form-close:hover {
+	color: #8cb3d9;
+}
+#add-form #form-device {
+	padding-top: 25px;
+}
+#add-form #form-device div {
+	display: inline-block;
+	padding: 8px;
+}
+#add-form #form-device input[type=text] {
+	padding-left: 3px;
+	width: 100%;
+	height: 40px;
+	border: none;
+	border-bottom: 1px solid #007a99;
+}
+#add-form #form-device input[type=text]:focus {
+	border-bottom: 2px solid #5cd6d6;
+}
+#add-form #save-device {
+	display: block;
+}
+#add-form #save-device input {
+	cursor: pointer;
+	background: white;
+	padding: 6px;
+	border-radius: 8px;
+	border: 1px solid #007a99;
+}
+#add-form #save-device input:hover {
+	color: white;
+	background: #007a99;
+	border: 1px solid #5cd6d6;
+}
+
+#device-table {
+	background: white;
+}
+#device-table #device-search {
+	padding: 5px;
+	background: transparent;
+	text-align: center;
+}
+#device-table #device-search div {
+	display: inline-block;
+	height: 40px;
+	margin-top: 5px 0px;
+}
+#company-name-search input, #device-name-serach input, #device-ref-search input {
+	width: 100%;
+	height: 100%;
+	border: none;
+	border-bottom: 1px solid #66cc99;
+	padding-right: 3px;
+}
+#company-name-search input:focus, #device-name-serach input:focus, #device-ref-search input:focus {
+	border-bottom: 2px solid #40bf40;
+}
+#device-table table {
+	width: 100%;
+	margin-top: 15px;
+}
+#device-table table tr {
+	height: 45px;
+}
+#device-table table thead {
+	color: #336699;
+	padding: 3px;
+	border-bottom: 1px solid #9fbfdf;
+}
+#device-table table tbody tr {
+	border-bottom: 1px solid #e0ebeb;
+}
+#device-table table tbody tr:hover {
+	background: #c2f0f0;
+}
+.copy-deviceRef, .modify-device, .download-config {
+	cursor: pointer;
+	color: #b3cccc;
+	font-size: 25px;
+}
+.copy-deviceRef:hover, .modify-device:hover, .download-config:hover {
+	color: #4dc3ff;
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 575.98px) {
+	.device-company, .device-name, .device-uid {
+		display: none;
+	}
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media screen and (min-width: 576px) and (max-width: 767.98px) {
+	.device-company, .device-name, .device-uid {
+		display: none;
+	}
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+	.device-company, .device-name, .device-uid {
+		display: none;
+	}
+}
+
+/* Large devices (desktops, 992px and up) */
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+	.device-company, .device-name, .device-uid {
+		display: ;
+	}
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+	.device-company, .device-name, .device-uid {
+		display: ;
+	}
+}
+</style>
+<div id="container">
+	<div id="add-device" class='col-12 col-sm-12 col-md-11 col-lg-10 col-xl-10'>
+		<div id="add" class='col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3'>
+			<span><i class="fas fa-plus"></i></span>
+			<p style="display: none;">Add a New Device</p>
+		</div>
+		<div style="display: none;" id="add-form" class='col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8'>
+			<span id="form-close"><i class="fas fa-times"></i></span>
+			<div id="form-device">
+				<div class='col-12 col-sm-12 col-md-5 col-lg-4 col-xl-5'>
+					<input id="company-name" type="text" name="company-name" placeholder="Company Name" required></div>
+				<div class='col-12 col-sm-12 col-md-5 col-lg-4 col-xl-5'>
+					<input id="device-name" type="text" name="device-name" placeholder="Device Name" required></div>
+				<div class='col-12 col-sm-12 col-md-5 col-lg-4 col-xl-5'>
+					<input id="device-ref" type="text" name="device-ref" placeholder="Device Ref" disabled></div>
+				<!--<div class='col-12 col-sm-12 col-md-5 col-lg-4 col-xl-5'>
+					<input id="device-uid" type="text" name="device-uid" placeholder="Device UID" disabled></div>
+				-->
+				<div id="save-device" class='col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12'><input type="submit" value="Add Device"></div>
+			</div>
+		</div>
+	</div>
+	<div id="device-table" class='col-12 col-sm-12 col-md-11 col-lg-10 col-xl-10'>
+		<div id='device-search' class='col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12'>
+			<div class='col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3' id='company-name-search'><input type="text" placeholder="Company Name"></div>
+			<div class='col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3' id='device-name-serach'><input type="text" placeholder="Device Name"></div>
+			<div class='col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3' id='device-ref-search'><input type="text" placeholder="Device Reference"></div>
+		</div>
+		<table>
+			<thead>
+				<tr>
+					<th class="device-company">Company Name</th>
+					<th class="device-name">Device Name</th>
+					<th>Device Ref</th>
+					<th class="device-uid">Device UID</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="sk-circle">
+  <div class="sk-circle1 sk-child"></div>
+  <div class="sk-circle2 sk-child"></div>
+  <div class="sk-circle3 sk-child"></div>
+  <div class="sk-circle4 sk-child"></div>
+  <div class="sk-circle5 sk-child"></div>
+  <div class="sk-circle6 sk-child"></div>
+  <div class="sk-circle7 sk-child"></div>
+  <div class="sk-circle8 sk-child"></div>
+  <div class="sk-circle9 sk-child"></div>
+  <div class="sk-circle10 sk-child"></div>
+  <div class="sk-circle11 sk-child"></div>
+  <div class="sk-circle12 sk-child"></div>
+</div>
+<script>
+$(document ).ready(function() {
+	deviceData();
+	$('#add-device #add').hover(function(e) {
+		$(this).find('p').show();
+	}, function(e) {
+		$(this).find('p').hide();
+	});
+	$('#add-device #add').click(function(event) {
+		$("#add-form").show();
+		$('#add-form #device-uid').val(b());
+		$('#add-form #device-ref').val(ref());
+	});
+
+	$('#add-form #form-close').click(function(event) {
+		$("#add-form").hide();
+	});
+
+	$('#company-name-search').keyup(function(event) {
+		searchDevices($(this).find('input').val(), '.device-company');
+	});
+
+	$('#device-name-serach').keyup(function(event) {
+		searchDevices($(this).find('input').val(), '.device-name');
+	});
+
+	$('#device-ref-search').keyup(function(event) {
+		searchDevices($(this).find('input').val(), '.device-ref');
+	});
+
+	$('#add-form #save-device input[type=submit]').click(function(e) {
+		if($('#add-form #company-name').val() == '' || $('#add-form #device-name').val() == '') {
+			$('.alert-danger').text('Please provide Company and Device name').show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+			return ;
+		}
+		var data = {
+			'company_name': $('#add-form #company-name').val(),
+			'device_name': $('#add-form #device-name').val(),
+			'device_ref': $('#add-form #device-ref').val(),
+			'device_uid': $('#add-form #device-uid').val()
+		}
+
+		$.post('/console/adddevice', data, function(data) {
+			$('.alert-success').text('New Device has been saved').show();
+			setTimeout(function() {
+				$('.alert-success').hide();
+				deviceData();
+			}, 1500);
+		}).fail(function(error) {
+			$('.alert-danger').text('Could not save the new Device').show();
+			setTimeout(function() {
+				$('.alert-danger').hide();
+			}, 1500);
+		});
+		
+	});
+
+	$(document).on('click', '#device-table table .device-ref .copy-deviceRef', function(event) {
+		var uid = $(this).parent().text();
+		copyToClipboard(uid.split(' ')[0]);
+		$('.alert-success').text("Text Copied To Clipboard").show();
+		setTimeout(function() {
+			$('.alert-success').hide();
+		}, 1500);
+	});
+
+	$(document).on('click', '#device-table table .device-edit .download-config', function(event) {
+		var ref = $(this).parents('.device-list').find('.device-ref').text().split(' ')[0];
+		console.log(ref);
+		var config = {
+			'company_name': $(this).parents('.device-list').find('.device-company').text(),
+			'device_name': $(this).parents('.device-list').find('.device-name').text(),
+			'device_ref': ref,
+			'device_uid': $(this).parents('.device-list').find('.device-uid').text()
+		}
+		download(ref+".json", config);
+	});
+
+});
+
+// download device config
+function download(filename, data) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data)));
+  element.setAttribute('download', filename);
+  element.setAttribute('target', '_blank');
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+// generate random and unique device uid
+function b(
+  a                  // placeholder
+){
+  var cryptoObj = window.crypto || window.msCrypto; // for IE 11
+  return a           // if the placeholder was passed, return
+    ? (              // a random number from 0 to 15
+      a ^            // unless b is 8,
+      cryptoObj.getRandomValues(new Uint8Array(1))[0]  // in which case
+      % 16           // a random number from
+      >> a/4         // 8 to 11
+      ).toString(16) // in hexadecimal
+    : (              // or otherwise a concatenated string:
+      [1e7] +        // 10000000 +
+      -1e3 +         // -1000 +
+      -4e3 +         // -4000 +
+      -8e3 +         // -80000000 +
+      -1e11          // -100000000000,
+      ).replace(     // replacing
+        /[018]/g,    // zeroes, ones, and eights with
+        b            // random hex digits
+      )
+}
+// generate random device ref
+function ref() {
+  return 'itransfo-'+([1e7]+-1e3+-4e3).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+// send dat to the server
+function deviceData() {
+	$(".sk-circle").css({"visibility": "visible"});
+	$('.device-list').remove();
+	$.post('/console/getdevices', function(data) {
+		$(".sk-circle").css({"visibility": "hidden"});
+		if(data.length > 0) {
+			console.log(data);
+			data.forEach(function(device) {
+
+				$('#device-table table tbody').append('\
+		<tr class="device-list">\
+		<td class="device-company">'+device.company_name+'</td>\
+		<td class="device-name">'+device.device_name+'</td>\
+		<td class="device-ref">'+device.device_ref+' <span class="copy-deviceRef"><i title="Copy Device Ref" class="fas fa-copy"></i></span></td>\
+		<td class="device-uid">'+device.device_uid+'</td>\
+		<td class="device-edit"><span class="modify-device"><i title="Edit Device" class="fas fa-edit"></i></span> <span class="download-config"><i title="Download Config File" class="fas fa-download"></i></sapn></td></tr>');
+			});
+		}
+		else {
+			$('#device-table table').append("No Data To Display!");
+		}	
+	}).fail(function(data) {
+		$(".sk-circle").css({"visibility": "hidden"});
+		$('#device-table table').append('Could Not Get User Data');
+	});
+}
+// filter table
+function searchDevices(txt, column) {
+	if(txt == "")
+		$('#device-table table tr.device-list').show();
+	var re = new RegExp(txt);
+	$('#device-table table tr.device-list').each(function(i) {
+	if($(this).find(column).text().toLowerCase().match(txt) == null ) {
+			$(this).hide();
+		}
+		else {
+			$(this).show();
+		}
+	});
+}
+</script>

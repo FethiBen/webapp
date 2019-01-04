@@ -1,0 +1,234 @@
+<style>
+#setting-device_select {
+	background: white;
+	padding: 15px;
+	border-radius: 8px;
+	margin: 15px 0px;
+	text-align: center;
+	font-style: 130%;
+}
+#setting-device_select #setting-selected-device {
+	height: 35px;
+	text-align: center;
+	border: none;
+	border: 1px solid #80CBC4;
+	border-radius: 5px;
+	padding-left: 8px;
+	color: #00695C;
+}
+#device-param {
+	background: white;
+	border-radius: 8px;
+	border: 1px solid #E0F7FA;
+	margin: 0px auto;
+	padding: 8px;
+}
+#device-param .params {
+	border-bottom: 1px solid #80CBC4;
+	text-align: center;
+	margin: 15px 0px;
+	padding: 12px;
+	color: #546E7A; 
+}
+#device-param .params > div {
+	display: block;
+	margin: 4px;
+	padding: 4px;
+}
+#device-param .params h3 {
+	text-align: center;
+	color: #004D40;
+	font-style: bold;
+	margin: 5px 0px;
+	margin-bottom: 8px;
+}
+#device-param .params .params-input {
+	display: inline-block;
+	margin: 3px;
+}
+#device-param .params .params-input input {
+	margin: 0px 5px;
+	padding: 3px;
+	height: 35px;
+	padding-left: 8px;
+	border-radius: 8px;
+}
+#device-param .params .params-input label {
+	margin: 0px 5px;
+	padding: 3px;
+}
+#device-param #submit-params {
+	text-align: right;
+}
+#device-param #submit-params input {
+	height: 45px;
+	padding: 8px;
+	margin: 10px;
+	background: #009688;
+	color: white;
+	border-radius: 8px;
+	border: 1px solid #00BCD4;
+	cursor: pointer;
+}
+#device-param #submit-params input:hover {
+	background: #00BCD4;
+	border: 1px solid #009688;
+}
+
+#device-param {
+	display: none;
+}
+</style>
+<div id="container">
+	<div id="setting-device_select" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		<select class="custom-select col-12 col-sm-12 col-md-5 col-lg-4 col-xl-4" name="select" id="setting-selected-device">
+			<option value="null">No Device Selected</option>
+		</select>
+	</div>
+
+	<div class="sk-circle">
+      <div class="sk-circle1 sk-child"></div>
+      <div class="sk-circle2 sk-child"></div>
+      <div class="sk-circle3 sk-child"></div>
+      <div class="sk-circle4 sk-child"></div>
+      <div class="sk-circle5 sk-child"></div>
+      <div class="sk-circle6 sk-child"></div>
+      <div class="sk-circle7 sk-child"></div>
+      <div class="sk-circle8 sk-child"></div>
+      <div class="sk-circle9 sk-child"></div>
+      <div class="sk-circle10 sk-child"></div>
+      <div class="sk-circle11 sk-child"></div>
+      <div class="sk-circle12 sk-child"></div>
+    </div>
+
+	<div id="device-param" class="col-12 col-sm-12 col-md-10 col-lg-8 col-xl-6">
+		<div class="params col-12 col-sm-12 col-md-5 col-lg-12 col-xl-12">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"><h3>Voltage</h3></div>
+			<div class="params-input col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5"><label for="pri_voltage_params">Primary</label><input max="2" min="1" id="pri_voltage_params" type="number" placeholder="" required></div>
+			<div class="params-input col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5"><label for="sec_voltage_params">Secondary</label><input max="2" min="1" id="sec_voltage_params" type="number" placeholder="" required ></div>
+		</div>
+		<div class="params col-12 col-sm-12 col-md-5 col-lg-12 col-xl-12">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"><h3>Current</h3></div>
+			<div class="params-input col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5"><label for="pri_current_params">Primary</label><input max="2" min="1" id="pri_current_params" type="number" placeholder="" required></div>
+			<div class="params-input col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5"><label for="sec_current_params">Secondary</label><input max="2" min="1" id="sec_current_params" type="number" placeholder="" required ></div>
+		</div>
+		<div class="params col-12 col-sm-12 col-md-5 col-lg-12 col-xl-12">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"><h3>Temperature</h3></div>
+			<div class="params-input col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5"><label for="int_temp_params">Internal</label><input min="2" max="90" id="int_temp_params" type="number" placeholder="" required></div>
+			<div class="params-input col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5"><label for="ext_temp_params">External</label><input min="2" max="90" id="ext_temp_params" type="number" placeholder="" required ></div>
+		</div>
+		<div id="submit-params">
+			<input type="button" value="Save Parameters">
+		</div>
+	</div>
+
+	
+</div>
+
+<script>
+$(document ).ready(function() {
+	$("#container > .sk-circle").css({"visibility": "visible"});
+	var data = {
+		'client_uid': user.uid
+	}
+    $.post('/getUserDevices/', data, function(data) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      if(data.length > 0) {
+        $.each(data, function (i, item) {
+		    $('#setting-selected-device').append($('<option>', { 
+		        value: item.device_ref,
+		        text : item.device_ref 
+		    }));
+		});
+      }
+      else {
+        
+      }
+
+    }).fail(function(error) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      $('.alert-danger').text('Could not get data').show();
+      setTimeout(function() {
+        $('.alert-danger').hide();
+      }, 1500);
+    });
+});
+
+	$('#setting-selected-device').on('change', function() {
+		$("#device-param").hide();
+		$("#container > .sk-circle").css({"visibility": "visible"});
+	    if(this.value != 'null') {
+		   	var data = {
+		   		'device_ref': this.value
+		   	}
+	   		$.post('/getparameters/', data, function(data) {
+		      $("#container > .sk-circle").css({"visibility": "hidden"});
+		      if(data.length > 0) {
+		        $.each(data, function (i, item) {
+				    $('.params-input #pri_voltage_params').val(item.pr_voltage);
+				    $('.params-input #sec_voltage_params').val(item.sec_voltage);
+				    $('.params-input #pri_current_params').val(item.pr_current);
+				    $('.params-input #sec_current_params').val(item.sec_current);
+				    $('.params-input #int_temp_params').val(item.internal_temp);
+				    $('.params-input #ext_temp_params').val(item.external_temp);
+				});
+				$("#device-param").show();
+		      }
+		      else {
+		        
+		      }
+
+		    }).fail(function(error) {
+		      $("#container > .sk-circle").css({"visibility": "hidden"});
+		      $('.alert-danger').text('Could not get data').show();
+		      setTimeout(function() {
+		        $('.alert-danger').hide();
+		      }, 1500);
+		    });
+	   }
+	   else {
+	   		$("#container > .sk-circle").css({"visibility": "hidden"});
+		    $('.alert-warning').text('Please Select a Valid Device').show();
+		    setTimeout(function() {
+		        $('.alert-warning').hide();
+		    }, 1500);
+	   }
+	})
+
+	$("#submit-params input").click(function(e) {
+		$("#device-param").hide();
+		$("#container > .sk-circle").css({"visibility": "visible"});
+		if(checkData()) {
+			return ;
+		}
+		var data = {
+			'pr_voltage': $('.params-input #pri_voltage_params').val(),
+		    'sec_voltage': $('.params-input #sec_voltage_params').val(),
+		    'pr_current': $('.params-input #pri_current_params').val(),
+		    'sec_current': $('.params-input #sec_current_params').val(),
+		    'internal_temp': $('.params-input #int_temp_params').val(),
+		    'external_temp': $('.params-input #ext_temp_params').val(),
+		    'device_ref': $('#setting-selected-device').val(),
+		    'uid': user.uid
+		}
+		$.post('/updateprameters/', data, function(data) {
+			    $("#device-param").show();
+		        $("#container > .sk-circle").css({"visibility": "hidden"});
+		        $('.alert-success').text('New Device parameters Have Been Set.').show();
+		        setTimeout(function() {
+		            $('.alert-success').hide();
+		        }, 1500);
+
+		    }).fail(function(error) {
+		    	$("#device-param").show();
+		        $("#container > .sk-circle").css({"visibility": "hidden"});
+		        $('.alert-danger').text('Could not update data').show();
+		        setTimeout(function() {
+		            $('.alert-danger').hide();
+		        }, 1500);
+		    });
+		})
+	function checkData() {
+		return false;
+	}
+</script>

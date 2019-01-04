@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <% include partials/head %> 
+</head>
+<body>
+<div id="overlay">
+	<div id="progstat"></div>
+	<div id="progress"></div>
+</div>
+<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
+  <div class="modal-dialog  modal-lg" role="document">
+    <div class="modal-content">
+        <!-- progressbar and alert -->
+        <div style="display: none;" id="wrong" class="alert alert-danger" role="alert">
+          A simple danger alert—check it out!
+        </div>
+        <div class="spinner" style="display: none;">
+          <div class="cube1"></div>
+          <div class="cube2"></div>
+        </div>
+      <div class="modal-body">
+        <!-- tab headers -->
+        <div class="tab">
+          <button class="tablinks" id="defaultOpen" onclick="openTab(event, 'signin')"><i class="fas fa-user"></i> SignIn</button>
+          <button class="tablinks" id="defaultClose" onclick="openTab(event, 'signup')"><i class="fas fa-user-plus"></i> SignUp</button>
+        </div>
+        <!-- signin tab -->
+        <div id="signin" class="tabcontent">
+          <form method="post" id="sign-in" class="needs-validation col-12 col-sm-12 col-md-11 col-lg-10 col-xl-8" novalidate>
+          <div class="form-group">
+            <label for="InputEmail">Email address</label>
+            <input type="email" class="form-control" value="benniaridha@gmail.com" name="email" id="InputEmail" required aria-describedby="emailHelp" placeholder="Enter email">
+            <div class="inner">&nbsp;</div>
+            <small id="emailHelpBlock" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            <div class="invalid-tooltip">
+              Please input valid a Email.
+            </div>
+            <div class="valid-tooltip">
+              Looks good!
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="InputPassword">Password</label>
+            <input type="password" class="form-control" value="tunis2" name="password" id="InputPassword" required placeholder="Password">
+            <div class="inner">&nbsp;</div>
+            <small id="passwordHelpBlock" class="form-text text-muted">
+              Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+            </small>
+            <div class="invalid-tooltip">
+              Please input a valid Password.
+            </div>
+            <div class="valid-tooltip">
+              Looks good!
+            </div>
+          </div>
+          <a href="#" onclick="sendPasswordReset()">Forget Password, Get a new one.</a>
+          <div class="col-auto offset-6 offset-sm-6 offset-md-9 offset-lg-9 offset-xl-9">
+            <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> SignIn</button>
+          </div>
+        </form>
+        </div>
+        <!-- Signup tab -->
+        <div id="signup" class="tabcontent">
+          <form id="sign-up" class="needs-validation col-12 col-sm-12 col-md-11 col-lg-10 col-xl-8" novalidate>
+            <div class="form-group">
+            <label for="exampleInputEmail1">First Name</label>
+            <input type="text" class="form-control" id="firstname" name="firstname" required aria-describedby="firstHelp" placeholder="First Name">
+            <small id="firstHelp" class="form-text text-muted">Please input a your first name. min 3 char</small>
+            <div class="invalid-tooltip">
+              Please input a valid first name.
+            </div>
+            <div class="valid-tooltip">
+              Looks good!
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="lastname">Last Name</label>
+            <input type="text" class="form-control" id="lastname" name="lastname" required aria-describedby="lastHelp" placeholder="Last Name">
+            <small id="lastHelp" class="form-text text-muted">Please input a your last name. min 3 char</small>
+            <div class="invalid-tooltip">
+              Please input a valid last name.
+            </div>
+            <div class="valid-tooltip">
+              Looks good!
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="username">Username</label>
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">@</div>
+              </div>
+              <input type="text" class="form-control" id="username" name="username" required placeholder="Username">
+                <div class="invalid-tooltip">
+                  Please choose a username-6 char min.
+                </div>
+                <div class="valid-tooltip">
+                  Looks good!
+                </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" required aria-describedby="emailHelp" placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            <div class="invalid-tooltip">
+              Please provide a valid Email.
+            </div>
+            <div class="valid-tooltip">
+              Looks good!
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required placeholder="Password">
+            <small id="passwordHelp" class="form-text text-muted">
+              Your password must be 6-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+            </small>
+            <div class="invalid-tooltip">
+              Please provide a valid Password.
+            </div>
+            <div class="valid-tooltip">
+              Looks good!
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="confirmation">Confirmation</label>
+            <input type="password" class="form-control" id="confirmation" name="confirmation" required placeholder="Password">
+            <small id="confirmationHelp" class="form-text text-muted">
+              Your password must match the one above.
+            </small>
+            <div class="invalid-tooltip">
+              Please provide a valid Password Confirmation.
+            </div>
+            <div class="valid-tooltip">
+              Looks good!
+            </div>
+          </div>
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" name="tos" id="customCheck1">
+            <label class="custom-control-label" for="customCheck1">Accept The Terms of Services and Privacy</label>
+          </div>
+          <br>
+          <div class="col-auto offset-6 offset-sm-6 offset-md-9 offset-lg-9 offset-xl-9">
+            <button type="submit" class="btn"><i class="fas fa-user-plus"></i> SignUp</button>
+          </div>
+        </form>
+        </div>
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+<% include partials/menu %>
+<hr>
+<hr>
+<section>
+<% include partials/home %>
+<% include partials/features %>
+<% include partials/techno %>
+<% include partials/partners %>
+<% include partials/about %>
+<% include partials/contact %>
+   <div class="container">
+	  <form action="action_page.php">
+
+		<label for="fname">First Name</label>
+		<input type="text" id="fname" name="firstname" placeholder="Your name..">
+
+		<label for="lname">Last Name</label>
+		<input type="text" id="lname" name="lastname" placeholder="Your last name..">
+
+		<label for="country">Country</label>
+		<select id="country" name="country">
+		  <option value="australia">Tunisia</option>
+		  <option value="canada">Algeria</option>
+		  <option value="usa">Syria</option>
+		</select>
+
+		<label for="subject">Subject</label>
+		<textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
+
+		<input type="submit" value="Submit">
+
+	  </form>
+	</div> 
+</section>
+<% include partials/footer %>
+</body>
+<% include partials/script %>
+</html>

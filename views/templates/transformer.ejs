@@ -1,0 +1,260 @@
+<style>
+#device_data table {
+	width: 100%;
+	margin-bottom: 3px;
+}
+#device_data table tr {
+  height: 45px;
+  text-align: center;
+}
+#device_data table thead {
+  color: white;
+  background: #0097A7;
+  padding: 3px;
+  border-bottom: 2px solid #80DEEA;
+}
+#device_data table thead tr {
+	border-bottom: 1px solid white;
+}
+#device_data table tbody tr {
+  border-bottom: 1px solid #00838F;
+}
+#device_data table tbody tr:hover {
+  background: #c2f0f0;
+  cursor: pointer;
+}
+
+#device_select {
+	margin: 15px 0px;
+	text-align: center;
+	padding: 5px;
+}
+#device_select input {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	color: gray;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+#device_select select {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	color: gray;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 575.98px) {
+	.voltage-current, .temperature {
+		display: none;
+	}
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media screen and (min-width: 576px) and (max-width: 767.98px) {
+	.voltage-current, .temperature {
+		display: none;
+	}
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+	.voltage-current {
+		display: none;
+	}
+	.temperature {
+		display: ;
+	}
+}
+
+/* Large devices (desktops, 992px and up) */
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+	.voltage-current, .temperature {
+		display: ;
+	}
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+	.voltage-current, .temperature {
+		display: ;
+	}
+}
+
+</style>
+
+<div id="container">
+	<div id="device_select" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		<select class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" name="select" id="selected-device">
+			<option value="null">No Device Selected</option>
+		</select>
+		<input class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" type="date" id="data-date">
+	</div>
+	<div id="device_data">
+		<table>
+			<thead>
+				<tr style="text-align: center;">
+					<th colspan="6" scope='colgroup' class="voltage-current">Voltage</th>
+					<th colspan="6" scope='colgroup' class="voltage-current">Current</th>
+					<th colspan="2" scope='colgroup' class="temperature">Temperature</th>
+					<th colspan="3" scope='colgroup' class="other">Other</th>
+				</tr>
+				<tr style="text-align: center;">
+					<th colspan="3" scope='col' class="voltage-current">Primary</th>
+					<th colspan="3" scope='col' class="voltage-current">Secondary</th>
+					<th colspan="3" scope='col' class="voltage-current">Primary</th>
+					<th colspan="3" scope='col' class="voltage-current">Secondary</th>
+					<th rowspan="2" class="temperature">Internal</th>
+					<th rowspan="2" class="temperature">External</th>
+					<th rowspan="2" class="other">Pressure</th>
+					<th rowspan="2" class="other">Gas</th>
+					<th rowspan="2" class="other">Timestamp</th>
+				</tr>
+				<tr>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+					<th class="voltage-current">P1</th>
+					<th class="voltage-current">P2</th>
+					<th class="voltage-current">P3</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+
+	<div class="sk-circle">
+      <div class="sk-circle1 sk-child"></div>
+      <div class="sk-circle2 sk-child"></div>
+      <div class="sk-circle3 sk-child"></div>
+      <div class="sk-circle4 sk-child"></div>
+      <div class="sk-circle5 sk-child"></div>
+      <div class="sk-circle6 sk-child"></div>
+      <div class="sk-circle7 sk-child"></div>
+      <div class="sk-circle8 sk-child"></div>
+      <div class="sk-circle9 sk-child"></div>
+      <div class="sk-circle10 sk-child"></div>
+      <div class="sk-circle11 sk-child"></div>
+      <div class="sk-circle12 sk-child"></div>
+    </div>
+</div>
+
+<script>
+
+	$("#device_select input[type=date]").attr({'max': new Date().toJSON().split('T')[0]});
+	$( "input[type='date']" ).change(function() {
+			findMatch($(this).val(), 33);
+		});
+
+$(document ).ready(function() {
+	$("#container > .sk-circle").css({"visibility": "visible"});
+	data = {
+		'client_uid': user.uid
+	}
+    $.post('/getUserDevices/', data, function(data) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      if(data.length > 0) {
+        $.each(data, function (i, item) {
+		    $('#selected-device').append($('<option>', { 
+		        value: item.device_ref,
+		        text : item.device_ref 
+		    }));
+		});
+      }
+      else {
+        
+      }
+
+    }).fail(function(error) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      $('.alert-danger').text('Could not get data').show();
+      setTimeout(function() {
+        $('.alert-danger').hide();
+      }, 1500);
+    });
+});
+
+	$('#selected-device').on('change', function() {
+		$("#container > .sk-circle").css({"visibility": "visible"});
+	   if(this.value != 'null') {
+		   	var data = {
+		   		'device_ref': this.value
+		   	}
+	   		$.post('/getdeviceData/', data, function(data) {
+	   		  $('#device_data table tbody').html('');
+		      $("#container .sk-circle").css({"visibility": "hidden"});
+		      if(data.length > 0) {
+		      	data.sort((function (a, b) { return new Date(a.timestamp) - new Date(b.timestamp) }));
+		        $.each(data, function (i, item) {
+				    $('#device_data table tbody').append(
+				    	'<tr class="dev-data">\
+							<td class="voltage-current">'+item.pri_voltage_p1+'</td>\
+							<td class="voltage-current">'+item.pri_voltage_p2+'</td>\
+							<td class="voltage-current">'+item.pri_voltage_p3+'</td>\
+							<td class="voltage-current">'+item.sec_voltage_p1+'</td>\
+							<td class="voltage-current">'+item.sec_voltage_p2+'</td>\
+							<td class="voltage-current">'+item.sec_voltage_p3+'</td>\
+							<td class="voltage-current">'+item.pri_current_p1+'</td>\
+							<td class="voltage-current">'+item.pri_current_p2+'</td>\
+							<td class="voltage-current">'+item.pri_current_p3+'</td>\
+							<td class="voltage-current">'+item.sec_current_p1+'</td>\
+							<td class="voltage-current">'+item.sec_current_p2+'</td>\
+							<td class="voltage-current">'+item.sec_current_p3+'</td>\
+							<td class="temperature">'+item.internal_temp+'</td>\
+							<td class="temperature">'+item.external_temp+'</td>\
+							<td class="other">'+item.pressure+'</td>\
+							<td class="other">'+item.gas+'</td>\
+							<td class="other">'+item.timestamp+'</td>\
+						</tr>');
+				});
+		      }
+		      else {
+		        
+		      }
+
+		    }).fail(function(error) {
+		      $("#container .sk-circle").css({"visibility": "hidden"});
+		      $('.alert-danger').text('Could not get data').show();
+		      setTimeout(function() {
+		        $('.alert-danger').hide();
+		      }, 1500);
+		    });
+	   }
+	   $("#container > .sk-circle").css({"visibility": "hidden"});
+	})
+
+
+// find matching tr in dashboard table 
+function findMatch(string, index) {
+	if(string == "")
+		$("table tbody .dev-data").show();
+	var temp = string.split('-');
+	string = parseInt(temp[2]).toString()+"/"+parseInt(temp[1]).toString()+"/"+temp[0].toString()
+	var re = new RegExp(string); //.replace(/\//g, "-")
+	var temp;
+	$.each( $("table tbody .dev-data"), function( key, value ) {
+		temp = $.parseHTML( value.innerHTML );
+		if((temp[index].innerHTML.toLowerCase().split(" ")[0].match(re)) == null)
+			$(this).hide();
+		else
+			$(this).show();
+	});
+}
+</script>
+

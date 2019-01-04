@@ -1,0 +1,165 @@
+<style>
+#container #console-stat {
+	margin: 0px auto;
+	text-align: center
+}
+#console-stat {
+
+}
+#console-stat .stat {
+	background: white;
+	border-radius: 25px;
+	border: 1px solid #607D8B;
+	text-align: center;
+	font-size: 160%;
+	height: 100px;
+	color: #607D8B;
+	margin: 8px;
+	padding: 5px;
+	display: inline-block;
+}
+#console-stat .sk-circle {
+	position: absolute;
+	top: 10px;
+	left: 45%;
+	z-index: 10;
+}
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 575.98px) {
+
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media screen and (min-width: 576px) and (max-width: 767.98px) {
+
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+
+}
+
+/* Large devices (desktops, 992px and up) */
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+
+}
+</style>
+
+<div id="container">
+	<div id="console-stat">
+		<div class="stat col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3" id="clients-stat">
+			<div class="sk-circle">
+			  <div class="sk-circle1 sk-child"></div>
+			  <div class="sk-circle2 sk-child"></div>
+			  <div class="sk-circle3 sk-child"></div>
+			  <div class="sk-circle4 sk-child"></div>
+			  <div class="sk-circle5 sk-child"></div>
+			  <div class="sk-circle6 sk-child"></div>
+			  <div class="sk-circle7 sk-child"></div>
+			  <div class="sk-circle8 sk-child"></div>
+			  <div class="sk-circle9 sk-child"></div>
+			  <div class="sk-circle10 sk-child"></div>
+			  <div class="sk-circle11 sk-child"></div>
+			  <div class="sk-circle12 sk-child"></div>
+			</div>
+			<div class="data"></div>
+			<div class="txt">Clients</div>
+		</div>
+		<div class="stat col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3" id="devices-stat">
+			<div class="sk-circle">
+			  <div class="sk-circle1 sk-child"></div>
+			  <div class="sk-circle2 sk-child"></div>
+			  <div class="sk-circle3 sk-child"></div>
+			  <div class="sk-circle4 sk-child"></div>
+			  <div class="sk-circle5 sk-child"></div>
+			  <div class="sk-circle6 sk-child"></div>
+			  <div class="sk-circle7 sk-child"></div>
+			  <div class="sk-circle8 sk-child"></div>
+			  <div class="sk-circle9 sk-child"></div>
+			  <div class="sk-circle10 sk-child"></div>
+			  <div class="sk-circle11 sk-child"></div>
+			  <div class="sk-circle12 sk-child"></div>
+			</div>
+			<div class="data"></div>
+			<div class="txt">Devices</div>
+		</div>
+		<div class="stat col-12 col-sm-12 col-md-5 col-lg-3 col-xl-3" id="linked-stat">
+			<div class="sk-circle">
+			  <div class="sk-circle1 sk-child"></div>
+			  <div class="sk-circle2 sk-child"></div>
+			  <div class="sk-circle3 sk-child"></div>
+			  <div class="sk-circle4 sk-child"></div>
+			  <div class="sk-circle5 sk-child"></div>
+			  <div class="sk-circle6 sk-child"></div>
+			  <div class="sk-circle7 sk-child"></div>
+			  <div class="sk-circle8 sk-child"></div>
+			  <div class="sk-circle9 sk-child"></div>
+			  <div class="sk-circle10 sk-child"></div>
+			  <div class="sk-circle11 sk-child"></div>
+			  <div class="sk-circle12 sk-child"></div>
+			</div>
+			<div class="data"></div>
+			<div class="txt">Lined Devices</div>
+		</div>
+	</div>
+	<div class="sk-circle">
+	  <div class="sk-circle1 sk-child"></div>
+	  <div class="sk-circle2 sk-child"></div>
+	  <div class="sk-circle3 sk-child"></div>
+	  <div class="sk-circle4 sk-child"></div>
+	  <div class="sk-circle5 sk-child"></div>
+	  <div class="sk-circle6 sk-child"></div>
+	  <div class="sk-circle7 sk-child"></div>
+	  <div class="sk-circle8 sk-child"></div>
+	  <div class="sk-circle9 sk-child"></div>
+	  <div class="sk-circle10 sk-child"></div>
+	  <div class="sk-circle11 sk-child"></div>
+	  <div class="sk-circle12 sk-child"></div>
+	</div>
+</div>
+
+<script>
+	$("#console-stat .sk-circle").css({"visibility": "visible"});
+	$.post('/console/getdevices', function(data) {
+		$("#devices-stat .sk-circle").css({"visibility": "hidden"});
+		$("#devices-stat .data").text(data.length);
+	}).fail(function(error) {
+		$("#devices-stat .sk-circle").css({"visibility": "hidden"});
+		$('.alert-danger').text('Could not get data').show();
+		setTimeout(function() {
+			$('.alert-danger').hide();
+		}, 1500);
+	});
+		
+	$.post('/console/getclients', function(data) {
+		$("#clients-stat .sk-circle").css({"visibility": "hidden"});
+		$("#clients-stat .data").text(data.length);
+	}).fail(function(error) {
+		$("#clients-stat .sk-circle").css({"visibility": "hidden"});
+		$('.alert-danger').text('Could not get data').show();
+		setTimeout(function() {
+			$('.alert-danger').hide();
+		}, 1500);
+	});
+
+	$.post('/console/getproducts', function(data) {
+		$("#linked-stat .sk-circle").css({"visibility": "hidden"});
+		$("#linked-stat .data").text(data.length);
+	}).fail(function(error) {
+		$("#linked-stat .sk-circle").css({"visibility": "hidden"});
+		$('.alert-danger').text('Could not get data').show();
+		setTimeout(function() {
+			$('.alert-danger').hide();
+		}, 1500);
+	});
+$(document ).ready(function() {
+
+
+});
+</script>
+

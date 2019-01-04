@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Transfo</title>
+<link rel="icon" href="/imgs/logo.png" type="image/png"> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="public, max-age=86400">
+<link rel="icon" href="/imgs/logo.png" type="image/png">
+
+<link rel="stylesheet" defer href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+<link defer rel="stylesheet" type="text/css" href="/css/header.css">
+
+<script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+<script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" async integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
+
+<!--</script>-->
+
+<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-database.js"></script>
+<script defer type="text/javascript" src="/javascripts/init.js"></script>
+
+<script type="text/javascript" src="/javascripts/progressbar.js"></script>
+<script defer type="text/javascript" src="/javascripts/jquery.easy-autocomplete.js"></script>
+<script defer type="text/javascript" src="/javascripts/header.js"></script>
+<script defer type="text/javascript" src="/javascripts/dashboard.js"></script>
+
+</head>
+<body>
+    <div class="alert alert-warning offset-md-3" id="alert" role="alert">
+      A confirmation Email has been sent, click on the provided link to confirm you email. <a href="#" onclick="sendEmailVerification()" class="alert-link">Didn't receive one, request another.</a> <i class="fas fa-times" style="cursor: pointer;" onclick="hideEmailnotfy()"></i>
+    </div>
+    <div class="alert alert-success" role="alert"></div>
+    <div class="alert alert-danger" role="alert"></div>
+    <!-- Side navigation -->
+    <div class="sidenav" id="mySidenav">
+      <div id="up-menu">
+        <div id="itransfo-logo">
+          <a class="navbar-brand" href="/">
+            <div id="logo">
+              
+			  <img title="" width="24" height="24" alt="" src="/imgs/favicon.png">
+              <!--<i id="cloud" class="fas fa-cloud fa-1x"></i><i id="power" class="fas fa-bolt fa-2x"></i> fa fa-cloud-lightning -->
+              Transfo
+            </div></a>
+        </div>
+        <% if (admin) { %>
+          <div class="dropdown-divider"></div>
+        <div id="admin-panel">
+          <a data-toggle="collapse" href="#collapseAdmin" id="my-admin"><i class="fas fa-cog icon"></i> Admin Panel
+            <i id="admin-angle-down" class="fas fa-angle-down"></i></a>
+           <div class="collapse menu" id="collapseAdmin">
+              <ul>
+                <li class="menu-item"><a class="mainContainer" href="/console/"><i class="fas fa-home ad-icon"></i> Admin Console</a></li>
+                <li class="menu-item"><a class="mainContainer" href="/console/devices"><i class="fas fa-bolt ad-icon"></i> Devices</a></li>
+                <li class="menu-item"><a class="mainContainer" href="/console/clients/"><i class="fas fa-users ad-icon"></i> Clients</a></li>
+                <li class="menu-item"><a class="mainContainer" href="/console/linkproducts/"><i class="fas fa-plus-circle ad-icon"></i> Link Products</a></li>
+                <li class="menu-item"><a class="mainContainer" href="/console/settings/"><i class="fas fa-wrench ad-icon"></i> Settings</a></li>
+              </ul>
+          </div>
+        </div>
+        <% } %>
+        
+        <div class="dropdown-divider"></div>
+      </div>
+      <div class="menu">
+        <ul>
+          <li class="menu-item active"><a class="mainContainer" href="/dashboard/"><i class="fas fa-home icon"></i> Dashboard</a></li>
+          <li class="menu-item"><a class="mainContainer" href="/transformer/"><i class="fas fa-bolt icon"></i> Transformer</a></li>
+          <li class="menu-item"><a class="mainContainer" href="/statistic/"><i class="fas fa-chart-line icon"></i> Statistic</a></li>
+          <li class="menu-item"><a class="mainContainer" href="/services/"><i class="fas fa-cogs icon"></i> Services</a></li>
+          <li class="menu-item"><a class="mainContainer" href="/products/"><i class="fas fa-cart-plus icon"></i> Products</a></li>
+          <li class="menu-item"><a class="mainContainer" href="/settings/"><i class="fas fa-wrench icon"></i> Settings</a></li>
+          <li class="menu-item"><a class="mainContainer" href="/support/"><i class="fas fa-question-circle icon"></i> Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <div style="cursor: pointer;" onclick="sideMenuToggle()"><i class="fas fa-bars"></i></div>
+      <a class="nav-link" href="#"><i class='fas fa-home icon'></i> Dashboard</a>
+        <div id="user" class="dropright">
+          <div onclick="profileMenu()" style="cursor: pointer;"><i class="fas fa-user"></i> <i class="fas fa-ellipsis-v"></i></div>
+          <div id="profile-menu" style="display: none;">
+            <span id="upper-div"></span>
+            <div id="profile-setting">
+              <div id="profile-info">
+                <div style="font-size: 40px; text-align: center;" class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3"><i class="fas fa-user-circle"></i></div>
+                <div class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8"><p id="username"></p><p id="useremail" class="form-text text-muted"></p></div>
+              </div>
+              <div id="profile-actions">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6"><a class="mainContainer" href="/account/"><i class="fas fa-user"></i> Account</a></div>
+                <div class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5"><a id="signout" onclick="signOut()" href="#"><i class="fas fa-sign-out-alt"></i> SignOut</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <section>
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+

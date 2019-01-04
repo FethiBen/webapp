@@ -1,0 +1,227 @@
+<div id="main">
+<style>
+#container #device-lists {
+  text-align: center;
+  margin: 0px auto;
+}
+#device-lists .device {
+  background: white;
+  border-radius: 15px;
+  border: 1px solid #607D8B;
+  text-align: left;
+  font-size: 120%;
+  color: #607D8B;
+  margin: 8px;
+  padding: 15px;
+  display: inline-block;
+}
+#device-lists .device:hover {
+  background: #607D8B;
+  cursor: pointer;
+  color: white;
+  border: 1px solid white;
+}
+.activeDevice {
+  background: #607D8B !important;
+  color: white !important;
+  border: 1px solid white !important;
+}
+
+#device-msg {
+  margin-top: 15px;
+}
+#device-msg table {
+  width: 100%;
+  border-radius: 1em;
+}
+#device-msg table tr {
+  height: 45px;
+}
+#device-msg table thead {
+  text-align: center;
+  color: white;
+  background: #00838F;
+  padding: 3px;
+  border-bottom: 2px solid #80DEEA;
+}
+#device-msg table tbody tr {
+  width: 100%;
+  border-bottom: 1px solid #e0ebeb;
+}
+#device-msg table tbody tr:hover {
+  background: #c2f0f0;
+}
+
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media screen and (max-width: 575.98px) {
+  #device-lists .device {
+    width: 90%;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media screen and (min-width: 576px) and (max-width: 767.98px) {
+  #device-lists .device {
+    width: 90%;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+  #device-lists .device {
+    width: 45%;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+  #device-lists .device {
+    width: 35%;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+  #device-lists .device {
+    width: 35%;
+  }
+}
+
+</style>
+
+
+  <div id="container">
+    <div id="device-lists">
+    </div>
+    <div id="device-msg" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+      <table>
+        <thead>
+          <tr style="text-align: center;">
+            <th colspan="1">Message</th>
+            <th colspan="1">Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          
+        </tbody>
+      </table>
+
+        <div class="sk-circle">
+          <div class="sk-circle1 sk-child"></div>
+          <div class="sk-circle2 sk-child"></div>
+          <div class="sk-circle3 sk-child"></div>
+          <div class="sk-circle4 sk-child"></div>
+          <div class="sk-circle5 sk-child"></div>
+          <div class="sk-circle6 sk-child"></div>
+          <div class="sk-circle7 sk-child"></div>
+          <div class="sk-circle8 sk-child"></div>
+          <div class="sk-circle9 sk-child"></div>
+          <div class="sk-circle10 sk-child"></div>
+          <div class="sk-circle11 sk-child"></div>
+          <div class="sk-circle12 sk-child"></div>
+        </div>
+    </div>
+    <div class="sk-circle">
+      <div class="sk-circle1 sk-child"></div>
+      <div class="sk-circle2 sk-child"></div>
+      <div class="sk-circle3 sk-child"></div>
+      <div class="sk-circle4 sk-child"></div>
+      <div class="sk-circle5 sk-child"></div>
+      <div class="sk-circle6 sk-child"></div>
+      <div class="sk-circle7 sk-child"></div>
+      <div class="sk-circle8 sk-child"></div>
+      <div class="sk-circle9 sk-child"></div>
+      <div class="sk-circle10 sk-child"></div>
+      <div class="sk-circle11 sk-child"></div>
+      <div class="sk-circle12 sk-child"></div>
+    </div>
+  </div>
+
+  </div>
+</section>  
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+/************************************************************************/
+if ('undefined' == typeof window.jQuery) {
+    console.log('// jQuery not present');
+}
+
+$(document ).ready(function() {
+
+if ('undefined' !== typeof user.uid) {
+	//user.uid=session.userId
+}
+    $("#main > #container > .sk-circle").css({"visibility": "visible"});
+//if ('undefined' !== typeof user.uid) {
+	console.log('user.uid = '+user.uid);
+    var data = {
+      'client_uid': user.uid 
+    }
+    $.post('/getUserDevicesInfo/', data, function(data) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      if(data.length > 0) {
+        $("#container #device-lists").html('');
+        data.forEach(function(device) {
+          $("#container #device-lists").append(
+            '<div class="device">\
+                <div>Device Name: '+device.device_name+'</span></div>\
+                <div>Company Name: <span>'+device.company_name+'</span></div>\
+                <div>Device Ref: <span class="dev-ref">'+device.device_ref+'</span></div>\
+              </div>');
+        })
+      }
+      else {
+        $("#container #device-lists").append("No Devices To Display");
+      }
+
+    }).fail(function(error) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      $('.alert-danger').text('Could not get data').show();
+      setTimeout(function() {
+        $('.alert-danger').hide();
+      }, 1500);
+    });
+//}
+
+  $(document).on('click', '#device-lists .device', function(event) {
+    $('#device-lists .device').removeClass('activeDevice');
+    $(this).addClass('activeDevice');
+      $("#device-msg .sk-circle").css({"visibility": "visible"});
+      var ref = $(this).find('.dev-ref').text();
+      var data = {
+        'device_ref': ref
+      }
+      $("#device-msg table tbody").html('')
+      $.post('/getmessages/', data, function(data) {
+        $("#device-msg .sk-circle").css({"visibility": "hidden"});
+        if(data.length > 0) {
+            data.forEach(function(msg) {
+            $("#device-msg table tbody").append(
+              '<tr dataId="'+msg._id+'">\
+                <td>'+msg.msg+'</td>\
+                <td>'+msg.timestamp+'</td>\
+              </tr>');
+          })
+        }
+        else {
+          $("#device-msg table tbody").html('<tr><td>No Messages To Display</td></tr>') 
+        }
+        
+      }).fail(function(error) {
+        $("#device-msg .sk-circle").css({"visibility": "hidden"});
+        $('.alert-danger').text('Could not get data').show();
+        setTimeout(function() {
+          $('.alert-danger').hide();
+        }, 1500);
+      });
+  });
+
+  $(document).on('click', "#device-msg table tbody tr", function(e) {
+    console.log($(this).attr('dataId'));
+  });  
+  
+});  
+/************************************************************************/  
+</script>
