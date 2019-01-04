@@ -17,7 +17,7 @@ var db1 = admin.database();
 db.settings({ timestampsInSnapshots: true });
 var router = express.Router();
 console.log('-in routes-');
-router.use(Express.static(path.join(__dirname, '../public')));
+router.use(express.static(path.join(__dirname, '../public')));
 router.use('/img', express.static(path.join(__dirname, 'public/imgs')));
 router.use('/js', express.static(path.join(__dirname, 'public/javascripts')));
 router.use('/css', express.static(path.join(__dirname, 'public/css')));
