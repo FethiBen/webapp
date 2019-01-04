@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "npm start",
-    "postinstall": "bower install && grunt build"
+    "start": "npm start"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
