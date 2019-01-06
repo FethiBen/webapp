@@ -136,21 +136,37 @@ console.log('--------------------1');// var key = req.query.item;
 	var newPostRef = usersRef.push();
 	var key = newPostRef.key;
 	var uid=key;
-    var user = {
+/*    var user = {
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: password,
         role: "guest",
 		uid:key
-    }
+    }*/
+	
+	var user = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+        role: "guest",
+		uid:key
+
+
+	};
+
+	
 console.log('--------------------2');	
 	console.log('--------------------3-'+key);
 //admin.database().ref('users/' + user.uid).set(user);
 //
-	newPostRef.set(user).catch(function(error) { console.log(error); });
-    //usersRef.push(user).catch(function(error) { console.log(error); });
+	//newPostRef.set(user).catch(function(error) { console.log(error); });
+    usersRef.push(user).catch(function(error) { console.log(error); });
 	console.log('--------------------4');
+	req.session.userId = key;
+	req.session.userName = email;
+	req.session.userdroits = 'false';
     res.redirect('/dashboard');//index', { title: 'Trash Bin',page:'DasBoard',menuId:'dashboard' });
 });
 /* --------------------------------------------------------------------- */
@@ -370,17 +386,17 @@ router.post('/console/settings', (req, res) => {
 });
 /* --------------------------------------------------------------------- */
 router.post('/getUserDevicesInfo/', (req, res) => {
-	var ref = [];
+	var _ref = [];
 	var docRef = db1.ref("linked_device");
 	docRef.once("value", function(snapshot) {
 		snapshot.forEach(function(doc) {
-			ref.push(doc.val().device_ref)
+			_ref.push(doc.val().device_ref)
 		});			
 			var d = [];	
 			var docRef1 = db1.ref("devices");
 			docRef1.once("value", function(snapshot) {
 				snapshot.forEach(function(doc) {
-					if(ref.indexOf(doc.val().device_ref) != -1) {
+					if(_ref.indexOf(doc.val().device_ref) != -1) {
 						d.push(doc.val());
 					}
 				});	
@@ -443,6 +459,17 @@ router.post('/getlatestdata/', upload.array(), (req, res) => {
 	
 	
 })
+router.post('/setprameters/', upload.array(), (req, res) => {
+	var obj = req.body
+	database.collection('devices').where('device_ref', '==', req.body.device_ref).get().then(docs => {
+		db.collection('parameters').insertOne(obj, (error, db) => {
+			if (error) return res.status(403).send('Could Not set Data');
+			return res.status(200).send("done");
+		})
+	}).catch(error => {
+		return res.status(403).send('Could Set Device prameters');
+	})
+})
 /* --------------------------------------------------------------------- */
 router.post('/getUserDevices/', (req, res) => {
 	var d = []
@@ -474,7 +501,7 @@ router.post('/getUserDevices/', (req, res) => {
 router.post('/getparameters/', upload.array(), (req, res) => {
 	var d = [];
 	var devRef = req.body.device_ref;
-//console.log('---------------------------* '+devRef+' *------------------------');
+
 	var docRef1 = db1.ref("parameters");
 	docRef1.once("value", function(snapshot) {
 		console.log(snapshot.key);
@@ -551,6 +578,180 @@ router.post('/getdatedata/', upload.array(), (req, res) => {
 	})	
 })
 
+
+function dateTime() {
+	var currentdate = new Date(); 
+	return  currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+}
+function setMessages(obj) {
+	db.collection('messages').insertOne(obj, (error, db) => {
+			if (error) return false;
+			return true;
+		})
+}
+function sendNotification(title, msg, ref) {
+	var message = {
+		 android: {
+		    ttl: 604800 * 1000, // 1 hour in milliseconds
+		    priority: 'normal',
+		    notification: {
+		        title: title,
+		        body: msg,
+		    },
+		    data: {
+				device_ref: ref
+			}
+		  },
+
+		topic: ref
+	};
+
+	// Send a message to devices subscribed to the combination of topics
+	// specified by the provided condition.
+	messages.send(message)
+	  .then((response) => {
+	    // Response is a message ID string.
+	    console.log('message sent!');
+	    return true;
+	  })
+	  .catch((error) => {
+	  	console.log('could not send message :( '+  error);
+	    return false;
+	  });
+} 
+
+function compareData(obj) {
+	return new Promise((resolve, reject) => {
+		db.collection('parameters').find({'device_ref': obj.device_ref}).toArray((error, data) => {
+			if(error) {
+				reject(null)
+			}
+			var params = data[0];
+			var result = {
+				'status': false,
+				'msg': ""
+			}
+			var transfo = {
+				'pri_voltage': (30000*parseInt(params.pri_voltage)/100),
+				'sec_voltage': (400*parseInt(params.sec_voltage)/100),
+				'pri_current': (12.12*parseInt(params.pri_current)/100),
+				'sec_current': (909.35*parseInt(params.sec_current)/100),
+				'internal_temp': params.internal_temp,
+				'external_temp': params.external_temp
+			}
+
+			if((obj.pri_voltage_p1 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p1 <= (30000-transfo.pri_voltage)) || (obj.pri_voltage_p2 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p2 <= (30000-transfo.pri_voltage)) || (obj.pri_voltage_p3 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p3 <= (30000-transfo.pri_voltage))) {
+				result = {
+					'status': true,
+					'msg': "Primary Voltage Bypassed its limits"
+				}
+				resolve(result);
+			}
+			else if((obj.sec_voltage_p1 >= (400+transfo.sec_voltage) || obj.sec_voltage_p1 <= (400-transfo.sec_voltage)) || (obj.sec_voltage_p2 >= (400+transfo.sec_voltage) || obj.sec_voltage_p2 <= (400-transfo.sec_voltage)) || (obj.sec_voltage_p3 >= (400+transfo.sec_voltage) || obj.sec_voltage_p3 <= (400-transfo.sec_voltage))) {
+				result = {
+					'status': true,
+					'msg': "Secondary Voltage Bypassed its limits"
+				}
+				resolve(result);
+			}
+			else if((obj.pri_current_p1 >= (12.12+transfo.pri_current) || obj.pri_current_p1 <= (12.12-transfo.pri_current)) || (obj.pri_current_p2 >= (12.12+transfo.pri_current) || obj.pri_current_p2 <= (12.12-transfo.pri_current)) || (obj.pri_current_p3 >= (12.12+transfo.pri_current) || obj.pri_current_p3 <= (12.12-transfo.pri_current))) {
+				result = {
+					'status': true,
+					'msg': "Primary Current Bypassed its limits"
+				}
+				resolve(result);
+			}
+			else if((obj.sec_current_p1 >= (909.35+transfo.sec_current) || obj.sec_current_p1 <= (909.35-transfo.sec_current)) || (obj.sec_current_p2 >= (909.35+transfo.sec_current) || obj.sec_current_p2 <= (909.35-transfo.sec_current)) || (obj.sec_current_p3 >= (909.35+transfo.sec_current) || obj.sec_current_p3 <= (909.35-transfo.sec_current))) {
+				result = {
+					'status': true,
+					'msg': "Secondary Current Bypassed its limits"
+				}
+				resolve(result);
+			}
+			else if(obj.internal_temp >= itransfo.internal_temp || obj,external_temp >= itransfo.external_temp) {
+				result = {
+					'status': true,
+					'msg': "Temperature Bypassed its limits"
+				}				
+				resolve(result);
+			}
+
+			resolve(result);
+		});
+	})
+}
+
+
+async function checkData(obj) {
+	console.log("data test started")
+	compareData(obj).then(data => {
+		console.log(data);
+		if(data.status) {
+			d = {
+				'msg': data.msg,
+				'data_id': obj._id,
+				'device_ref': obj.device_ref,
+				'timestamp': dateTime()
+			};
+			console.log("Send alarm msg")
+			setMessages(d);
+			sendNotification("ITransfo: Device Warning", "Device Warning - "+obj.device_ref+" \n"+data.msg, obj.device_ref);
+			return "done";
+		}
+		else {
+			console.log("status: No Error");
+		}
+	}).catch( error => {
+		return "Compare Error: "+error
+	});
+	
+}
+
+
+/*
+*
+*	Receive data from device
+*
+/* --------------------------------------------------------------------- */
+
+router.post('/setdata/', upload.array(), (req, res) => {
+	
+	database.collection('devices').where('device_ref', '==', req.body.device_ref).get().then(docs => {
+		obj = req.body
+		obj['timestamp'] = dateTime()
+		db.collection('data').insertOne(obj, (error, db) => {
+			if (error) return res.status(403).send('Could Not set Data');
+			
+		})
+		checkData(obj).then(data => {
+				return res.status(200).send("done");
+			}).catch( error => {
+				console.log(error);
+				return res.status(400).send(error);
+			});
+		return true;
+	}).catch(error => {
+		return res.status(403).send('Could Not set Data');
+	})
+})
+/**		
+**		
+**		Set User Notification Token
+**
+*/
+
+router.post('/setToken/', upload.array(), (req, res) => {
+	var user = database.collection('users').doc(String(req.body.client_uid))
+		user.update({
+			'appToken': req.body.tokenId
+		});
+	return res.status(200).send("done");
+})
 /**		
 **		
 **		return device_ref of the User devices
@@ -648,5 +849,10 @@ router.get('**', (req, res) => {
   err.status = 404;
   next(err);	
 })
+
+router.get('**', (req, res) => {
+	return res.redirect('https://br-webapp.herokuapp.com')
+})
+
 /* --------------------------------------------------------------------- */
 module.exports = router;
