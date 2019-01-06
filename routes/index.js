@@ -114,6 +114,45 @@ router.get('/signout/', function(req, res, next) {
 	req.session.userdroits = null;
     res.redirect('/');
 });
+router.get('/signup', function(req, res, next) {
+    if (req.session.userId) {
+        //res.redirect('/dashboard/' + req.session.userName + '/bins');
+		res.redirect('/dashboard');
+    }
+    res.render('signup');
+});
+
+router.post('/signup/', function(req, res, next) {
+    var firstName = req.body.firstName;
+    var lastName = req.body.lastName;
+    var email = req.body.email;
+    var password = req.body.password;
+    var confirmPassword = req.body.confirmPassword;
+console.log('--------------------1');// var key = req.query.item;
+
+    var database = db1;//firebase.database();
+    var usersRef = database.ref('/users/');
+	
+	var newPostRef = usersRef.push();
+	var key = newPostRef.key;
+	var uid=key;
+    var user = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+        role: "guest",
+		uid:key
+    }
+console.log('--------------------2');	
+	console.log('--------------------3-'+key);
+//admin.database().ref('users/' + user.uid).set(user);
+//
+	newPostRef.set(user).catch(function(error) { console.log(error); });
+    //usersRef.push(user).catch(function(error) { console.log(error); });
+	console.log('--------------------4');
+    res.redirect('/dashboard');//index', { title: 'Trash Bin',page:'DasBoard',menuId:'dashboard' });
+});
 /* --------------------------------------------------------------------- */
 router.get('/console/', (req, res) => {
 	if (req.session.userId) {
@@ -376,6 +415,34 @@ router.post('/getmessages/', (req, res) => {
 		return res.status(403).send('Could Not Get Devices');
 	})
 })
+router.post('/getlatestdata/', upload.array(), (req, res) => {
+	/*db.collection('data').find({'device_ref': req.body.device_ref}).limit(1).sort({$natural:-1}).toArray((error, data) => {
+		if(error) return res.status(403).send('Could Not Get Data');
+		res.setHeader('Content-Type', 'application/json');
+    		return res.status(200).send(data[0]);
+	})*/
+	
+	
+	var d = [];	
+	var devRef = req.body.device_ref;
+
+	var docRef1 = db1.ref("data");
+	docRef1.once("value", function(snapshot) {
+		console.log(snapshot.key);
+		snapshot.forEach(function(doc) {
+			if(doc.val().device_ref == devRef) {
+				d.push(doc.val());
+			}
+		});
+		res.setHeader('Content-Type', 'application/json');
+		return res.status(200).send(d[0]);
+	}).catch(error => {
+		return res.status(403).send('Could Not Get Data');
+	})	
+	
+	
+	
+})
 /* --------------------------------------------------------------------- */
 router.post('/getUserDevices/', (req, res) => {
 	var d = []
@@ -484,7 +551,28 @@ router.post('/getdatedata/', upload.array(), (req, res) => {
 	})	
 })
 
-
+/**		
+**		
+**		return device_ref of the User devices
+**
+*/
+router.post('/devicesub/', upload.array(), (req, res) => {
+	var d = [];
+	var devRef = req.body.client_uid;
+	var docRef1 = db1.ref("linked_devices");
+	docRef1.once("value", function(snapshot) {
+		console.log(snapshot.key);
+		snapshot.forEach(function(doc) {
+			if(doc.val().client_uid == devRef) {
+				d.push(doc.val().device_ref);//d.push(doc.val());
+			}
+		});	
+    	res.setHeader('Content-Type', 'application/json');
+		return res.status(200).send(d)		
+	}).catch(error => {
+		return res.status(403).send('Could Not Get Parameters');
+	})
+})
 
 
 
