@@ -23,7 +23,7 @@ router.use('/js', express.static(path.join(__dirname, 'public/javascripts')));
 router.use('/css', express.static(path.join(__dirname, 'public/css')));
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    console.log('-in routes-router.get');
+    console.log('-in routes-router.get * '+req.session.userId);
 	if (req.session.userId) {
         isAdmin=req.session.userdroits;
 		res.render('dashboard',{admin: isAdmin});
@@ -32,20 +32,19 @@ router.get('/', function(req, res, next) {
 });
 
 function isAuthenticated(req, res, next) {
-	
 	const sessionCookie = req.cookies.__session || '';
     admin.auth().verifySessionCookie(sessionCookie, true).then((decodedClaims) => {
-	    	try {
-	    		res.locals.admin = (decodedClaims.admin.toString() === 'true')? true: false;
-				res.locals.supervisor = (decodedClaims.supervisor.toString() === 'true')? true: false;
-				return next();
-	    	}
-			catch(error) {
-				return next();
-			}
-	  }).catch(error => {
-	    res.redirect('/');
-	  });
+		try {
+			res.locals.admin = (decodedClaims.admin.toString() === 'true')? true: false;
+			res.locals.supervisor = (decodedClaims.supervisor.toString() === 'true')? true: false;
+			return next();
+		}
+		catch(error) {
+			return next();
+		}
+		}).catch(error => {
+			res.redirect('/');
+		});
 }
 /* --------------------------------------------------------------------- */
 router.post('/sessionLogin/', function(req, res, next) {
@@ -54,7 +53,7 @@ router.post('/sessionLogin/', function(req, res, next) {
 	var idToken = req.body.idToken;
     var database = db1;//firebase.database();
     var usersRef = database.ref('/users/');
-console.log('In router.post user 1*2 ');
+	console.log('In router.post user 1*2 ');
 	usersRef.orderByChild('email').equalTo(email).once('value').then(function(snapshot) {
         var user = snapshot.val();
 		console.log('In router.post user * '+user);
@@ -78,11 +77,12 @@ console.log('In router.post user 1*2 ');
 				var sessionCookie = req.cookies.__session || '';
 				 res.setHeader('Content-Type', 'application/json');
 				  res.write(JSON.stringify({status: 'success'}));
+				  console.log('session login Ok');
 				  res.end();
 				 return res;
             } else {
-                return res.status(401).send('UNAUTHORIZED REQUEST!');
-				res.redirect('/');
+                console.log('session login No');
+				return res.status(401).send('UNAUTHORIZED REQUEST!');
             }
         } else {
             throw 'User not found!';
@@ -92,7 +92,7 @@ console.log('In router.post user 1*2 ');
 });	
 /* --------------------------------------------------------------------- */
 router.get('/dashboard/', function(req, res, next) {
-    if (req.session.userId) {
+	if (req.session.userId) {
         isAdmin=req.session.userdroits;
 		return res.render('dashboard',{admin: isAdmin});
     }
@@ -114,61 +114,59 @@ router.get('/signout/', function(req, res, next) {
 	req.session.userdroits = null;
     res.redirect('/');
 });
-router.get('/signup', function(req, res, next) {
-    if (req.session.userId) {
-        //res.redirect('/dashboard/' + req.session.userName + '/bins');
+router.get('/signup/', function(req, res, next) {
+	if (req.session.userId) {
 		res.redirect('/dashboard');
     }
-    res.render('signup');
+    res.redirect('/signup/');
 });
+/* --------------------------------------------------------------------- */
+router.post('/signup/', upload.array(), (req, res) => {
+	admin.auth().createUser({
+		email: req.body.email,
+		emailVerified: false,
+		password: req.body.password,
+		displayName: req.body.username,
+		disabled: false
+	}).catch((error) => {
+		res.send("error");
+	}).then((userRecord) => {
+		var ref = db1.ref("/");
+		var itemsRef = ref.child("users");
+		var newItemRef = itemsRef.push();
+		newItemRef.set({		
+			'firstname': req.body.firstname,
+			'lastname': req.body.lastname,
+			'username': req.body.username,
+			'email': req.body.email,
+			'uid': userRecord.uid,
+			'appToken': '',
+			'company': '',
+			'admin': 'false',
+			'supervisor': 'false',
+			'disabled': 'false'
+		}).then(function(docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch(function(error) {
+			console.error("Error adding document: ", error);
+		});
 
-router.post('/signup/', function(req, res, next) {
-    var firstName = req.body.firstName;
-    var lastName = req.body.lastName;
-    var email = req.body.email;
-    var password = req.body.password;
-    var confirmPassword = req.body.confirmPassword;
-console.log('--------------------1');// var key = req.query.item;
-
-    var database = db1;//firebase.database();
-    var usersRef = database.ref('/users/');
-	
-	var newPostRef = usersRef.push();
-	var key = newPostRef.key;
-	var uid=key;
-/*    var user = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        role: "guest",
-		uid:key
-    }*/
-	
-	var user = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        role: "guest",
-		uid:key
-
-
-	};
-
-	
-console.log('--------------------2');	
-	console.log('--------------------3-'+key);
-//admin.database().ref('users/' + user.uid).set(user);
-//
-	//newPostRef.set(user).catch(function(error) { console.log(error); });
-    usersRef.push(user).catch(function(error) { console.log(error); });
-	console.log('--------------------4');
-	req.session.userId = key;
-	req.session.userName = email;
-	req.session.userdroits = 'false';
-    res.redirect('/dashboard');//index', { title: 'Trash Bin',page:'DasBoard',menuId:'dashboard' });
-});
+		admin.auth().setCustomUserClaims(userRecord.uid, {admin: false, supervisor: false}).then(() => {
+			console.log("done");
+	        return true;
+		}).catch(error => {
+		        console.log(error);
+		});
+		
+	    res.send("signedUp");
+	    return true;
+		
+	})
+	.catch((error) => {
+	    res.send("error");
+	});
+})
 /* --------------------------------------------------------------------- */
 router.get('/console/', (req, res) => {
 	if (req.session.userId) {
