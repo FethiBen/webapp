@@ -10,9 +10,8 @@ var config = {
     projectId: "bennia-itansfo",
     storageBucket: "bennia-itansfo.appspot.com",
     messagingSenderId: "608660233491"
-  };
-  firebase.initializeApp(config);
-console.log(firebase.default.auth) // Function
+};
+firebase.initializeApp(config);
 /* --------------------------------------------------------------- */
 ;(function(){
   function id(v){ return document.getElementById(v); }
@@ -50,7 +49,6 @@ console.log(firebase.default.auth) // Function
 /* --------------------------------------------------------------- */
 $( document ).ready(function() {
 	firebase.auth().onAuthStateChanged(function(user) {
-		console.log('-in js- fire auth');
 		if (user) {
 			var curuser = firebase.auth().currentUser;
 			console.log('Signed in as : '+curuser.displayName);
@@ -180,17 +178,16 @@ function validateSigninData() {
     }
     return true;
 }
+
+/* --------------------------------------------------------------- */
 // submit the form data
 function submitSigninForm(){
     $(".modal-body").hide();
     $(".modal-content .spinner").show();
     var email = document.getElementById('InputEmail').value;
     var password = document.getElementById('InputPassword').value;
-    // When the user signs in with email and password.
 	firebase.auth().signInWithEmailAndPassword(email, password)
 	.catch(function(error) {
-		console.log(error);
-		// Handle Errors here.
 		  var errorCode = error.code;
 		  var errorMessage = error.message;
 		  $("#wrong").text(errorMessage).show();
@@ -199,9 +196,6 @@ function submitSigninForm(){
             $(".modal-content .spinner").hide();
 
 	}).then(user => {
-	  // Get the user's ID token as it is needed to exchange for a session cookie.
-//	  return user.getIdToken().then(idToken => {
-//		return postIdTokenToSessionLogin('/sessionLogin/', idToken, getCookie('csrfToken'));
 	  return firebase.auth().currentUser.getIdToken().then(idToken => {
 		return postIdTokenToSessionLogin('/sessionLogin/', idToken, getCookie('csrfToken'));
 	  });
@@ -247,28 +241,22 @@ var firstname = $("#firstname").val(), lastname = $("#lastname").val(), username
         return false;
     }
     if(!tos) {
-	    console.log('not tos');
+	    console.log('Prière cochez la case ');
     	return false;
     }
     return true;
 }
-// submit the form data
+
 function submitSignupForm(){
     $(".modal-body").hide();
     $(".modal-content .spinner").show();
     var form = $('#sign-up');
     var url = '/signup/';
     var formData = $(form).serializeArray();
-/*/----------------
-for (var value of formData.values()) {
-		console.log(value); 
-}
-//---------------*/
     $.post(url, formData).done(function (data) {
-	console.log('1 '+data);
-        if(data == 'error') {
-            console.log('2 '+error);
-	    $("#wrong").text("Could Not Register You").show();
+        console.log('***In Post(signup) : 2');
+		if(data == 'error') {
+			$("#wrong").text("Could Not Register You").show();
             setTimeout(function(){ $("#wrong").hide(); }, 3000);
             $(".modal-body").show();
             $(".modal-content .spinner").hide();
@@ -278,7 +266,6 @@ for (var value of formData.values()) {
       		var password = document.getElementById('password').value;
       			firebase.auth().signInWithEmailAndPassword(email, password)
 				.catch(function(error) {
-					// Handle Errors here.
 					var errorCode = error.code;
 					var errorMessage = error.message;
 					$("#wrong").text(errorMessage).show();
@@ -286,10 +273,8 @@ for (var value of formData.values()) {
 			        $(".modal-body").show();
 			        $(".modal-content .spinner").hide();
 				}).then(user => {
-				  // Get the user's ID token as it is needed to exchange for a session cookie.
 				  return firebase.auth().currentUser.getIdToken().then(idToken => {
-				  //return user.getIdToken().then(idToken => {
-					return postIdTokenToSessionLogin('/sessionLogin/', idToken, getCookie('csrfToken'));
+					postIdTokenToSessionLogin('/sessionLogin/', idToken, getCookie('csrfToken'));
 				  });
 				}).catch((error) => {
 				  window.location.assign('/');
@@ -303,13 +288,12 @@ for (var value of formData.values()) {
   	});
     return false;
 }
-
+/* --------------------------------------------------------------- */
 function getCookie(name) {
     var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
 	return v ? v[2] : null;
 }
 function postIdTokenToSessionLogin(url, id, csrfToken) {
-    //var form = $('#sign-in');	
     var email = document.getElementById('InputEmail').value;
     var password = document.getElementById('InputPassword').value;	
 	var data = {
@@ -318,7 +302,6 @@ function postIdTokenToSessionLogin(url, id, csrfToken) {
 		email:email,
 		password:password
 	}
-//console.log('In js.post postIdTokenToSessionLogin * '+id+' *** '+url+' *** '+data.idToken+' *** '+data.csrfToken+' *** '+data.email+' *** '+data.password);
 	$.post(url, data).done(function (data) {
         if(data == 'UNAUTHORIZED REQUEST!') {
             $("#wrong").text("Invalid Session, Please Signin again").show();
@@ -327,9 +310,7 @@ function postIdTokenToSessionLogin(url, id, csrfToken) {
             $(".modal-content .spinner").hide();
         }
         else {
-            //console.log('Data retour : '+data);
 			window.location.replace("/dashboard/");			
-            //window.location.replace("pages/dashboard");
         }
 
     }).fail(function() {
@@ -381,10 +362,7 @@ function sendPasswordReset() {
   });
   // [END sendpasswordemail];
 }
-
 /* --------------------------------------------------------------- */
-
-
 function openTab(evt, tab) {
     // Declare all variables
     var i, tabcontent, tablinks;
