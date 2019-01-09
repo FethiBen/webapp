@@ -763,7 +763,7 @@ router.get('/devicesub/', (req, res) => {
 router.post('/devicesub/', upload.array(), (req, res) => {
 	var d = [];
 	var devRef = req.body.client_uid;
-	var docRef1 = db1.ref("linked_devices");
+	var docRef1 = db1.ref("linked_device");
 	docRef1.once("value", function(snapshot) {
 		console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
