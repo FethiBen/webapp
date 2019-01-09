@@ -296,7 +296,7 @@ router.post('/console/addlink', (req, res) => {
 	var uid = req.body.client_uid;
 	//if(res.locals.admin) {
 	if (req.session.userId) {
-		db.collection('linked_devices').where('device_ref', '==', req.body.device_ref )
+		db.collection('linked_device').where('device_ref', '==', req.body.device_ref )
 			.where('client_uid', '==', req.body.client_uid)
 			.get().then(docs => {
 				var temp = true;
@@ -306,7 +306,7 @@ router.post('/console/addlink', (req, res) => {
 				})
 				
 				if(temp) {
-					db.collection('linked_devices').add({
+					db.collection('linked_device').add({
 						'device_ref' : req.body.device_ref,
 						'client_uid': req.body.client_uid,
 						'timestamp': time.format('YYYY-MM-DD HH:mm:ss')
@@ -363,7 +363,7 @@ router.post('/console/updateproduct', (req, res) => {
 /* --------------------------------XXX------------------------------------- */
 router.post('/console/deletelink', upload.array(), (req, res) => {
 	if (req.session.userId) {
-		db.collection('linked_devices').doc(req.body.docID).delete().then(doc => {
+		db.collection('linked_device').doc(req.body.docID).delete().then(doc => {
 			return res.status(200).send("done");
 		}).catch(error => {
 			return res.status(403).send('Could not delete link');
