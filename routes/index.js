@@ -392,10 +392,10 @@ router.post('/getUserDevicesInfo/', (req, res) => {
 		});			
 			var d = [];	
 			var docRef1 = db1.ref("devices");
-			docRef1.once("value", function(snapshot) {
-				snapshot.forEach(function(doc) {
-					if(_ref.indexOf(doc.val().device_ref) != -1) {
-						d.push(doc.val());
+			docRef1.once("value", function(snapshots) {
+				snapshots.forEach(function(docs) {
+					if(_ref.indexOf(docs.val().device_ref) != -1) {
+						d.push(docs.val());
 					}
 				});	
 			res.setHeader('Content-Type', 'application/json');
