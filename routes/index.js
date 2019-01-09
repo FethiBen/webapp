@@ -762,9 +762,9 @@ router.post('/devicesub/', upload.array(), (req, res) => {
 	docRef1.once("value", function(snapshot) {
 		console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
-			//if(doc.val().client_uid == devRef) {
+			if(doc.val().client_uid == devRef) {
 				d.push(doc.val().device_ref);//d.push(doc.val());
-			//}
+			}
 		});	
     	res.setHeader('Content-Type', 'application/json');
 		return res.status(200).send(d)		
