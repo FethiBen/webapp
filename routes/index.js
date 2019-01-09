@@ -588,7 +588,7 @@ function dateTime() {
                 + currentdate.getSeconds();
 }
 function setMessages(obj) {
-	db.collection('messages').insertOne(obj, (error, db) => {
+	db.collection('Messages').insertOne(obj, (error, db) => {
 			if (error) return false;
 			return true;
 		})
