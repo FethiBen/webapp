@@ -562,6 +562,7 @@ router.post('/getdatedata/', upload.array(), (req, res) => {
 	var d = [];
 	var devRef = req.body.device_ref;
 	var docRef1 = db1.ref("data");
+	console.log('=============================================',devRef);
 	docRef1.once("value", function(snapshot) {
 		console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
@@ -750,6 +751,10 @@ router.post('/setToken/', upload.array(), (req, res) => {
 		});
 	return res.status(200).send("done");
 })
+/* --------------------------------------------------------------------- */
+router.get('/devicesub/', (req, res) => {
+	res.redirect('/devicesub/');
+});
 /**		
 **		
 **		return device_ref of the User devices
@@ -762,9 +767,9 @@ router.post('/devicesub/', upload.array(), (req, res) => {
 	docRef1.once("value", function(snapshot) {
 		console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
-			if(doc.val().client_uid == devRef) {
+			//if(doc.val().client_uid == devRef) {
 				d.push(doc.val().device_ref);//d.push(doc.val());
-			}
+			//}
 		});	
     	res.setHeader('Content-Type', 'application/json');
 		return res.status(200).send(d)		
