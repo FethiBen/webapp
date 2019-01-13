@@ -699,7 +699,7 @@ async function checkData(obj) {
 			};
 			console.log("Send alarm msg")
 			setMessages(d);
-			sendNotification("ITransfo: Device Warning", "Device Warning - "+obj.device_ref+" \n"+data.msg, obj.device_ref);
+			sendNotification("smarTTransfo: Device Warning", "Device Warning - "+obj.device_ref+" \n"+data.msg, obj.device_ref);
 			return "done";
 		}
 		else {
