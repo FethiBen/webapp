@@ -155,7 +155,7 @@ if ('undefined' !== typeof user.uid) {
 }
     $("#main > #container > .sk-circle").css({"visibility": "visible"});
 //if ('undefined' !== typeof user.uid) {
-	console.log('user.uid = '+user.uid);
+	//console.log('user.uid = '+user.uid);
     var data = {
       'client_uid': user.uid 
     }
@@ -196,7 +196,9 @@ if ('undefined' !== typeof user.uid) {
       $("#device-msg table tbody").html('')
       $.post('/getmessages/', data, function(data) {
         $("#device-msg .sk-circle").css({"visibility": "hidden"});
+		
         if(data.length > 0) {
+			$("#device-msg table tbody").empty();
             data.forEach(function(msg) {
             $("#device-msg table tbody").append(
               '<tr dataId="'+msg._id+'">\
