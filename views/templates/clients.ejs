@@ -208,13 +208,19 @@ $(document ).ready(function() {
 	});
 
 	$(document).on('click', '#client-table table .client-edit .modify', function(event) {
-		clientsData();
+		//console.log('I am in Edit');
+		//clientsData();
+		alert('Désolé cette option est en cours de construction ...');
+		return false;
 	});
+	
+	
 
 	$(document).on('click', '#client-table table .client-edit .disable', function(event) {
 		var uid = $(this).parent().parent().find('.client-uid').text().split(' ')[0];
-
+console.log(uid);
 		$.post('/console/disable',{uid: uid}, function(data) {
+			console.log('disable '+data);
 			$('.alert-success').text("Account Disabled").show();
 			clientsData();
 			setTimeout(function() {
@@ -232,8 +238,10 @@ $(document ).ready(function() {
 function clientsData() {
 	$(".sk-circle").css({"visibility": "visible"});
 	$.post('/console/getclients', function(data) {
+		console.log('getclients '+data);
 		$(".sk-circle").css({"visibility": "hidden"});
 		if(data.length > 0) {
+			$('#client-table table tbody').empty();
 			data.forEach(function(user) {
 				var admin = (String(user.admin) == 'true')? "#E6E600":"#b3cccc";
 				var supervisor = (String(user.supervisor) == 'true')? "#E6E600":"#b3cccc";
