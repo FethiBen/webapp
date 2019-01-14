@@ -12,8 +12,10 @@ var defaultApp = admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://bennia-itansfo.firebaseio.com"
 });
+
 var db = admin.firestore();
 var db1 = admin.database();
+
 db.settings({ timestampsInSnapshots: true });
 var router = express.Router();
 console.log('-in routes-');
@@ -122,6 +124,7 @@ router.get('/signup/', function(req, res, next) {
 });
 /* --------------------------------------------------------------------- */
 router.post('/signup/', upload.array(), (req, res) => {
+	console.log('----------------------1');
 	admin.auth().createUser({
 		email: req.body.email,
 		emailVerified: false,
@@ -129,8 +132,10 @@ router.post('/signup/', upload.array(), (req, res) => {
 		displayName: req.body.username,
 		disabled: false
 	}).catch((error) => {
+		console.log('----------------------2e : ',error);
 		res.send("error");
 	}).then((userRecord) => {
+		console.log('----------------------3');
 		var ref = db1.ref("/");
 		var itemsRef = ref.child("users");
 		var newItemRef = itemsRef.push();
@@ -146,25 +151,23 @@ router.post('/signup/', upload.array(), (req, res) => {
 			'supervisor': 'false',
 			'disabled': 'false'
 		}).then(function(docRef) {
+			console.log('----------------------4e');
 			console.log("Document written with ID: ", docRef.id);
 		})
 		.catch(function(error) {
-			console.error("Error adding document: ", error);
+			console.log('----------------------5e');
+			console.error(error);
 		});
-
-		admin.auth().setCustomUserClaims(userRecord.uid, {admin: false, supervisor: false}).then(() => {
-			console.log("done");
-	        return true;
-		}).catch(error => {
-		        console.log(error);
-		});
-		
-	    res.send("signedUp");
-	    return true;
-		
+		console.log('----------------------6');
+		req.session.userdroits=false;
+		res.setHeader('Content-Type', 'application/json');
+		res.status(200).send(JSON.stringify({status: 'success'}));//JSON.stringify({status: 'success'});
 	})
 	.catch((error) => {
-	    res.send("error");
+		console.log('----------------------7e : ',error);
+	    res.setHeader('Content-Type', 'application/json');
+		res.status(401).send(JSON.stringify({status: 'error'}));
+		//res.send("error");
 	});
 })
 /* --------------------------------------------------------------------- */
@@ -197,8 +200,10 @@ router.post('/console/devices', (req, res) => {
 /* ---------------------------------XXX------------------------------------ */
 router.post('/console/adddevice', (req, res) => {
 	if (req.session.userId) {
-		var device = db.collection('devices').doc(String(req.body.device_ref));
-		device.set({
+		var ref = db1.ref("/");
+		var itemsRef = ref.child("devices");
+		var newItemRef = itemsRef.push();
+		newItemRef.set({
 			'company_name': req.body.company_name,
 			'device_name': req.body.device_name,
 			'device_ref' : req.body.device_ref,
@@ -264,22 +269,31 @@ router.post('/console/getclients', (req, res) => {
 	}
 });
 /* -------------------------------------XXX-------------------------------- */
-router.post('/console/disable', isAuthenticated, upload.array(), (req, res) => {
-	//--------------	???
-	if(req.body.uid === 'JV4B09DOwvbmiYLzfdr9XOVN26q2') {
-		return res.status(401).send("UNAUTHORIZED REQUEST!");
-	}
-	//--------------
-	admin.auth().updateUser(req.body.uid, {
-	  disabled: true
-	})
-	  .then((userRecord) => {
-	  	db.collection('users').doc(req.body.uid).update({disabled: 'true'});
-	    return res.status(200).send("done");
-	  })
-	  .catch((error) => {
-	    return res.status(401).send("error");
-	  });
+router.post('/console/disable', (req, res) => {
+	var thisUid=req.body.uid;
+	var i=0;
+	var docRef = db1.ref("users");
+	docRef.once("value", function(snapshot) {
+		snapshot.forEach(function(doc) {
+			console.log(doc.val().uid,' ? ',thisUid);
+			var data=doc.val();
+			if (doc.val().uid.toString().trim() === thisUid.toString().trim())
+			{
+				var key = Object.keys(snapshot.val())[i];
+				admin.auth().updateUser(thisUid, {
+				  disabled: true
+				}).catch((error) => {
+					res.status(401).send("error");
+				}).then((userRecord) => {
+					db1.ref("users/"+key).update({ 'disabled': 'true' });
+					return res.status(200).send("done");
+				});
+			}
+			i++;
+		});	
+	}).catch((error) => {
+		res.status(401).send("error");
+	});	
 })
 
 /* --------------------------------------------------------------------- */
@@ -293,35 +307,55 @@ router.post('/console/linkproducts/', (req, res) => {
 });
 /* ----------------------------------XXX----------------------------------- */
 router.post('/console/addlink', (req, res) => {
-	var uid = req.body.client_uid;
-	//if(res.locals.admin) {
 	if (req.session.userId) {
-		db.collection('linked_device').where('device_ref', '==', req.body.device_ref )
-			.where('client_uid', '==', req.body.client_uid)
-			.get().then(docs => {
-				var temp = true;
-				docs.forEach(doc => {
-					temp = false
-					return res.status(403).send('Device already linked!').end();
-				})
-				
-				if(temp) {
-					db.collection('linked_device').add({
-						'device_ref' : req.body.device_ref,
-						'client_uid': req.body.client_uid,
-						'timestamp': time.format('YYYY-MM-DD HH:mm:ss')
-					}).then( ref => {
-						return res.status(200).send("done");
-					}).catch(error => {
-						return res.status(403).send('Could not add data');
-					});
+		var d = [];var _ref = [];
+		var refUid = req.body.client_uid;
+		var refDev = req.body.device_ref;
+		console.log(refUid,' - ',refDev);
+		var ref = db1.ref("/");
+		var itemsRef = ref.child("linked_device");
+		itemsRef.orderByChild('device_ref').equalTo(refDev).once('value').then(function(snapshot) {
+			console.log('1');
+			snapshot.forEach(function(doc) {
+				console.log('2');
+				if(doc.val().client_uid == refUid) {
+					_ref.push(doc.val());
 				}
-				
-				return true;
-			}).catch(error => {
-				return res.status(403).send('Could not add data');
 			});
-		
+			console.log('3');
+			var temp = true;
+			_ref.forEach(doc => {
+				temp = false
+				return res.status(403).send('Device already linked!').end();
+			})
+			console.log('4');
+			
+			var ts_hms = new Date();
+			var thisTimeIs=ts_hms.getFullYear() + '-' + 
+				("0" + (ts_hms.getMonth() + 1)).slice(-2) + '-' + 
+				("0" + (ts_hms.getDate())).slice(-2) + ' ' +
+				("0" + ts_hms.getHours()).slice(-2) + ':' +
+				("0" + ts_hms.getMinutes()).slice(-2) + ':' +
+				("0" + ts_hms.getSeconds()).slice(-2);
+			
+			if(temp) {
+				var ref = db1.ref("/");
+				var itemsRef = ref.child("linked_device");
+				var newItemRef = itemsRef.push();
+				newItemRef.set({
+					'device_ref' : req.body.device_ref,
+					'client_uid': req.body.client_uid,
+					'timestamp': thisTimeIs//time.format('YYYY-MM-DD HH:mm:ss')
+				}).then( ref => {
+					return res.status(200).send("done");
+				}).catch(error => {
+					return res.status(403).send('Could not add data');
+				});
+			}
+			return true;
+		}).catch(error => {
+			return res.status(403).send('Could not add data');
+		});			
 	}
 	else {
 		return res.status(403).send('UNAUTHORIZED REQUEST!');
@@ -363,11 +397,27 @@ router.post('/console/updateproduct', (req, res) => {
 /* --------------------------------XXX------------------------------------- */
 router.post('/console/deletelink', upload.array(), (req, res) => {
 	if (req.session.userId) {
-		db.collection('linked_device').doc(req.body.docID).delete().then(doc => {
-			return res.status(200).send("done");
-		}).catch(error => {
-			return res.status(403).send('Could not delete link');
-		});
+	var thisUid = req.body.docID;
+	var docRef = db1.ref("linked_device");
+	docRef.once("value", function(snapshot) {
+		snapshot.forEach(function(doc) {
+			var data=doc.val();
+			if (doc.val().device_ref.toString().trim() === thisUid.toString().trim())
+			{
+				var key = Object.keys(snapshot.val())[i];
+				db1.ref("linked_device/"+key).remove().then(function() {
+					console.log("Remove succeeded.")
+					return res.status(200).send("done");
+				  }).catch(function(error) {
+					console.log("Remove failed: " + error.message)
+					return res.status(401).send(error);
+				  });
+			}
+			i++;
+		});	
+	}).catch((error) => {
+		res.status(401).send("error");
+	});	
 	}
 	else {
 		return res.status(403).send('UNAUTHORIZED REQUEST!');
@@ -430,12 +480,6 @@ router.post('/getmessages/', (req, res) => {
 	})
 })
 router.post('/getlatestdata/', upload.array(), (req, res) => {
-	/*db.collection('data').find({'device_ref': req.body.device_ref}).limit(1).sort({$natural:-1}).toArray((error, data) => {
-		if(error) return res.status(403).send('Could Not Get Data');
-		res.setHeader('Content-Type', 'application/json');
-    		return res.status(200).send(data[0]);
-	})*/
-	
 	
 	var d = [];	
 	var devRef = req.body.device_ref;
@@ -458,22 +502,25 @@ router.post('/getlatestdata/', upload.array(), (req, res) => {
 	
 })
 router.post('/setprameters/', upload.array(), (req, res) => {
-	var obj = req.body
-	database.collection('devices').where('device_ref', '==', req.body.device_ref).get().then(docs => {
-		db.collection('parameters').insertOne(obj, (error, db) => {
-			if (error) return res.status(403).send('Could Not set Data');
-			return res.status(200).send("done");
+		obj = req.body
+		var ref = db1.ref("/");
+		var itemsRef = ref.child("parameters");
+		var newItemRef = itemsRef.push();
+		newItemRef.set(obj).then(function(docRef) {
+			res.status(200).send("done");
 		})
-	}).catch(error => {
-		return res.status(403).send('Could Set Device prameters');
-	})
+		.catch(function(error) {
+			res.status(403).send('Could Not set Data');
+		});
+
+
+	
 })
 /* --------------------------------------------------------------------- */
 router.post('/getUserDevices/', (req, res) => {
 	var d = []
 
 	var cliUid = req.body.client_uid;
-//console.log('--------------------------- '+cliUid+'------------------------');
 	var docRef1 = db1.ref("devices");
 	docRef1.once("value", function(snapshot) {
 		snapshot.forEach(function(doc) {
@@ -481,12 +528,6 @@ router.post('/getUserDevices/', (req, res) => {
 				d.push(doc.val());
 			//}
 		});
-	/*
-	database.collection('devices').where('clients.'+req.body.client_uid, '==', 'true').get().then(docs => {
-		docs.forEach(function(doc) {
-			d.push(doc.data())
-		})*/
-
     	res.setHeader('Content-Type', 'application/json');
 		return res.status(200).send(d);
 	}).catch(error => {
@@ -508,14 +549,6 @@ router.post('/getparameters/', upload.array(), (req, res) => {
 				d.push(doc.val());
 			}
 		});	
-	
-	/*
-	database.collection('devices').where('device_ref', '==', req.body.device_ref).get().then(docs => {
-		db.collection('parameters').find({'device_ref': req.body.device_ref}).toArray((error, data) => {
-			if(error) return res.status(403).send('Could Not Get Data');
-			res.setHeader('Content-Type', 'application/json');
-	    	return res.status(200).send(data);
-		})*/
     	res.setHeader('Content-Type', 'application/json');
 		return res.status(200).send(d)		
 	}).catch(error => {
@@ -524,13 +557,7 @@ router.post('/getparameters/', upload.array(), (req, res) => {
 })
 
 router.post('/getdeviceData/', (req, res) => {
-	/*db.collection('data').find({'device_ref': req.body.device_ref}).sort({timestamp: -1}).toArray((error, data) => {
-		if(error) return res.status(403).send('Could Not Get Data');
-		res.setHeader('Content-Type', 'application/json');
-    	return res.status(200).send(data);
-	})*/
-	
-	
+
 	var d = [];
 	var devRef = req.body.device_ref;
 	var docRef1 = db1.ref("data");
@@ -553,16 +580,10 @@ router.post('/getdeviceData/', (req, res) => {
 })
 
 router.post('/getdatedata/', upload.array(), (req, res) => {
-	/*db.collection('data').find({device_ref: req.body.device_ref, timestamp: new RegExp(req.body.date)}).sort({timestamp: 1}).toArray((error, data) => {
-		if(error) return res.status(403).send('Could Not Get Data');
-		res.setHeader('content-type', 'application/json');
-		return res.status(200).send(data);
-	})*/
-	
+
 	var d = [];
 	var devRef = req.body.device_ref;
 	var docRef1 = db1.ref("data");
-	console.log('=============================================',devRef);
 	docRef1.once("value", function(snapshot) {
 		console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
@@ -588,10 +609,16 @@ function dateTime() {
                 + currentdate.getSeconds();
 }
 function setMessages(obj) {
-	db.collection('Messages').insertOne(obj, (error, db) => {
-			if (error) return false;
+		var ref = db1.ref("/");
+		var itemsRef = ref.child("Messages");
+		var newItemRef = itemsRef.push();
+		newItemRef.set(obj).then(function(docRef) {
 			return true;
 		})
+		.catch(function(error) {
+			return false;
+		});		
+		
 }
 function sendNotification(title, msg, ref) {
 	var message = {
@@ -610,11 +637,8 @@ function sendNotification(title, msg, ref) {
 		topic: ref
 	};
 
-	// Send a message to devices subscribed to the combination of topics
-	// specified by the provided condition.
 	messages.send(message)
 	  .then((response) => {
-	    // Response is a message ID string.
 	    console.log('message sent!');
 	    return true;
 	  })
@@ -626,62 +650,74 @@ function sendNotification(title, msg, ref) {
 
 function compareData(obj) {
 	return new Promise((resolve, reject) => {
-		db.collection('parameters').find({'device_ref': obj.device_ref}).toArray((error, data) => {
-			if(error) {
-				reject(null)
-			}
-			var params = data[0];
-			var result = {
-				'status': false,
-				'msg': ""
-			}
-			var transfo = {
-				'pri_voltage': (30000*parseInt(params.pri_voltage)/100),
-				'sec_voltage': (400*parseInt(params.sec_voltage)/100),
-				'pri_current': (12.12*parseInt(params.pri_current)/100),
-				'sec_current': (909.35*parseInt(params.sec_current)/100),
-				'internal_temp': params.internal_temp,
-				'external_temp': params.external_temp
-			}
+			var data = [];
+			var devRef = req.body.device_ref;
+			var docRef1 = db1.ref("parameters");
+			docRef1.once("value", function(snapshot) {
+				snapshot.forEach(function(doc) {
+					if(doc.val().device_ref == devRef) {
+						data.push(doc.val());
+					}
+				});
 
-			if((obj.pri_voltage_p1 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p1 <= (30000-transfo.pri_voltage)) || (obj.pri_voltage_p2 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p2 <= (30000-transfo.pri_voltage)) || (obj.pri_voltage_p3 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p3 <= (30000-transfo.pri_voltage))) {
-				result = {
-					'status': true,
-					'msg': "Primary Voltage Bypassed its limits"
+				if(error) {
+					reject(null)
 				}
-				resolve(result);
-			}
-			else if((obj.sec_voltage_p1 >= (400+transfo.sec_voltage) || obj.sec_voltage_p1 <= (400-transfo.sec_voltage)) || (obj.sec_voltage_p2 >= (400+transfo.sec_voltage) || obj.sec_voltage_p2 <= (400-transfo.sec_voltage)) || (obj.sec_voltage_p3 >= (400+transfo.sec_voltage) || obj.sec_voltage_p3 <= (400-transfo.sec_voltage))) {
-				result = {
-					'status': true,
-					'msg': "Secondary Voltage Bypassed its limits"
+				var params = data[0];
+				var result = {
+					'status': false,
+					'msg': ""
 				}
-				resolve(result);
-			}
-			else if((obj.pri_current_p1 >= (12.12+transfo.pri_current) || obj.pri_current_p1 <= (12.12-transfo.pri_current)) || (obj.pri_current_p2 >= (12.12+transfo.pri_current) || obj.pri_current_p2 <= (12.12-transfo.pri_current)) || (obj.pri_current_p3 >= (12.12+transfo.pri_current) || obj.pri_current_p3 <= (12.12-transfo.pri_current))) {
-				result = {
-					'status': true,
-					'msg': "Primary Current Bypassed its limits"
+				var transfo = {
+					'pri_voltage': (30000*parseInt(params.pri_voltage)/100),
+					'sec_voltage': (400*parseInt(params.sec_voltage)/100),
+					'pri_current': (12.12*parseInt(params.pri_current)/100),
+					'sec_current': (909.35*parseInt(params.sec_current)/100),
+					'internal_temp': params.internal_temp,
+					'external_temp': params.external_temp
 				}
-				resolve(result);
-			}
-			else if((obj.sec_current_p1 >= (909.35+transfo.sec_current) || obj.sec_current_p1 <= (909.35-transfo.sec_current)) || (obj.sec_current_p2 >= (909.35+transfo.sec_current) || obj.sec_current_p2 <= (909.35-transfo.sec_current)) || (obj.sec_current_p3 >= (909.35+transfo.sec_current) || obj.sec_current_p3 <= (909.35-transfo.sec_current))) {
-				result = {
-					'status': true,
-					'msg': "Secondary Current Bypassed its limits"
-				}
-				resolve(result);
-			}
-			else if(obj.internal_temp >= itransfo.internal_temp || obj,external_temp >= itransfo.external_temp) {
-				result = {
-					'status': true,
-					'msg': "Temperature Bypassed its limits"
-				}				
-				resolve(result);
-			}
 
-			resolve(result);
-		});
+				if((obj.pri_voltage_p1 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p1 <= (30000-transfo.pri_voltage)) || (obj.pri_voltage_p2 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p2 <= (30000-transfo.pri_voltage)) || (obj.pri_voltage_p3 >= (30000+transfo.pri_voltage) || obj.pri_voltage_p3 <= (30000-transfo.pri_voltage))) {
+					result = {
+						'status': true,
+						'msg': "Primary Voltage Dépassement des seuils"
+					}
+					resolve(result);
+				}
+				else if((obj.sec_voltage_p1 >= (400+transfo.sec_voltage) || obj.sec_voltage_p1 <= (400-transfo.sec_voltage)) || (obj.sec_voltage_p2 >= (400+transfo.sec_voltage) || obj.sec_voltage_p2 <= (400-transfo.sec_voltage)) || (obj.sec_voltage_p3 >= (400+transfo.sec_voltage) || obj.sec_voltage_p3 <= (400-transfo.sec_voltage))) {
+					result = {
+						'status': true,
+						'msg': "Secondary Voltage Dépassement des seuils"
+					}
+					resolve(result);
+				}
+				else if((obj.pri_current_p1 >= (12.12+transfo.pri_current) || obj.pri_current_p1 <= (12.12-transfo.pri_current)) || (obj.pri_current_p2 >= (12.12+transfo.pri_current) || obj.pri_current_p2 <= (12.12-transfo.pri_current)) || (obj.pri_current_p3 >= (12.12+transfo.pri_current) || obj.pri_current_p3 <= (12.12-transfo.pri_current))) {
+					result = {
+						'status': true,
+						'msg': "Primary Current Dépassement des seuils"
+					}
+					resolve(result);
+				}
+				else if((obj.sec_current_p1 >= (909.35+transfo.sec_current) || obj.sec_current_p1 <= (909.35-transfo.sec_current)) || (obj.sec_current_p2 >= (909.35+transfo.sec_current) || obj.sec_current_p2 <= (909.35-transfo.sec_current)) || (obj.sec_current_p3 >= (909.35+transfo.sec_current) || obj.sec_current_p3 <= (909.35-transfo.sec_current))) {
+					result = {
+						'status': true,
+						'msg': "Secondary Current Dépassement des seuils"
+					}
+					resolve(result);
+				}
+				else if(obj.internal_temp >= itransfo.internal_temp || obj,external_temp >= itransfo.external_temp) {
+					result = {
+						'status': true,
+						'msg': "Temperature Dépassement des seuils"
+					}				
+					resolve(result);
+				}
+
+				resolve(result);
+
+			}).catch(error => {
+				return res.status(403).send('Could Not Get Parameters');
+			})
 	})
 }
 
@@ -718,25 +754,26 @@ async function checkData(obj) {
 *
 /* --------------------------------------------------------------------- */
 
-router.post('/setdata/', upload.array(), (req, res) => {
-	
-	database.collection('devices').where('device_ref', '==', req.body.device_ref).get().then(docs => {
+router.post('/setdata/', (req, res) => {
 		obj = req.body
 		obj['timestamp'] = dateTime()
-		db.collection('data').insertOne(obj, (error, db) => {
-			if (error) return res.status(403).send('Could Not set Data');
-			
-		})
-		checkData(obj).then(data => {
+		var ref = db1.ref("/");
+		var itemsRef = ref.child("data");
+		var newItemRef = itemsRef.push();
+		newItemRef.set(obj).then(function(docRef) {
+			console.log('----------------------4e');
+			console.log("Document written");
+			checkData(obj).then(data => {
 				return res.status(200).send("done");
 			}).catch( error => {
 				console.log(error);
 				return res.status(400).send(error);
 			});
-		return true;
-	}).catch(error => {
-		return res.status(403).send('Could Not set Data');
-	})
+		})
+		.catch(function(error) {
+			console.log('----------------------5e');
+			console.error(error);
+		});	
 })
 /**		
 **		
@@ -745,11 +782,36 @@ router.post('/setdata/', upload.array(), (req, res) => {
 */
 
 router.post('/setToken/', upload.array(), (req, res) => {
-	var user = database.collection('users').doc(String(req.body.client_uid))
-		user.update({
-			'appToken': req.body.tokenId
-		});
-	return res.status(200).send("done");
+
+	var thisUid=req.body.client_uid;
+	var thisToken=req.body.tokenId;
+	var i=0;
+	var docRef = db1.ref("users");
+	docRef.once("value", function(snapshot) {
+		snapshot.forEach(function(doc) {
+			var data=doc.val();
+			if (doc.val().uid.toString().trim() === thisUid.toString().trim())
+			{
+				var key = Object.keys(snapshot.val())[i];
+				admin.auth().updateUser(thisUid, {
+				  appToken: thisToken
+				}).catch((error) => {
+					res.status(401).send("error");
+				}).then((userRecord) => {
+					db1.ref("users/"+key).update({ 'appToken': thisToken });
+					return res.status(200).send("done");
+				});
+			}
+			i++;
+		});	
+	}).catch((error) => {
+		res.status(401).send("error");
+	});		
+	
+	
+	
+	
+	
 })
 /* --------------------------------------------------------------------- */
 router.get('/devicesub/', (req, res) => {
@@ -767,9 +829,9 @@ router.post('/devicesub/', upload.array(), (req, res) => {
 	docRef1.once("value", function(snapshot) {
 		console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
-			if(doc.val().client_uid == devRef) {
+			//if(doc.val().client_uid == devRef) {
 				d.push(doc.val().device_ref);//d.push(doc.val());
-			}
+			//}
 		});	
     	res.setHeader('Content-Type', 'application/json');
 		return res.status(200).send(d)		
@@ -782,31 +844,51 @@ router.post('/devicesub/', upload.array(), (req, res) => {
 
 
 
-router.post('/updateprameters/', upload.array(), (req, res) => {
-	database.collection('devices').where('device_ref', '==', req.body.device_ref).get().then(docs => {
-		database.collection('users').doc(req.body.uid).then(user => {
-			if(user.data().supervisor == "true") {
-				db.collection('parameters').update({'device_ref': req.body.device_ref}, {$set:{
-					'pri_voltage': req.body.pri_voltage,
-				    'sec_voltage': req.body.sec_voltage,
-				    'pri_current': req.body.pri_current,
-				    'sec_current': req.body.sec_current,
-				    'internal_temp': req.body.internal_temp,
-				    'external_temp': req.body.external_temp
-				}})
-				return res.status(200).send('done');
+router.post('/updateprameters/',(req, res) => {
+	var thisUid=req.body.uid;
+	var thisDevRef=req.body.device_ref;
+	var i=0;
+	var docRef = db1.ref("users");
+	docRef.once("value", function(snapshot) {
+		snapshot.forEach(function(doc) {
+			var data=doc.val();
+			if (doc.val().uid.toString().trim() === thisUid.toString().trim() && doc.val().supervisor == "true")
+			{
+				
+				var docRefp = db1.ref("parameters");
+				docRefp.once("value", function(snapshot) {
+					snapshot.forEach(function(doc) {
+						var data=doc.val();
+						var key = Object.keys(snapshot.val())[i];
+						if (doc.val().device_ref.toString().trim() === thisDevRef.toString().trim() && doc.val().supervisor == "true")
+						{				
+							db1.ref("parameters/"+key).update({
+								'pri_voltage': req.body.pri_voltage,
+								'sec_voltage': req.body.sec_voltage,
+								'pri_current': req.body.pri_current,
+								'sec_current': req.body.sec_current,
+								'internal_temp': req.body.internal_temp,
+								'external_temp': req.body.external_temp
+							});
+						}
+						i++;
+					});
+					res.setHeader('Content-Type', 'application/json');
+					return res.status(200).send("done");
+				}).catch(error => {
+					return res.status(403).send('Could Set Device prameters');
+				});
 			}
 			else {
+				res.setHeader('Content-Type', 'application/json');
 				return res.status(400).send('error');
 			}
-			
 		}).catch(error => {
-			return res.status(400).send('error');
+			return res.status(403).send('Could Set Device prameters');
 		});
-		
 	}).catch(error => {
 		return res.status(403).send('Could Set Device prameters');
-	})
+	});	
 })
 /* --------------------------------------------------------------------- */
 router.post('/transformer/', (req, res) => {
