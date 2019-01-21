@@ -143,6 +143,7 @@ router.post('/signup/', upload.array(), (req, res) => {
 			'firstname': req.body.firstname,
 			'lastname': req.body.lastname,
 			'username': req.body.username,
+			'password': req.body.password,
 			'email': req.body.email,
 			'uid': userRecord.uid,
 			'appToken': '',
