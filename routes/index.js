@@ -147,7 +147,7 @@ router.post('/signup/', upload.array(), (req, res) => {
 			'email': req.body.email,
 			'uid': userRecord.uid,
 			'appToken': '',
-			'company': '',
+			'Company': 'Anonyme',
 			'admin': 'false',
 			'supervisor': 'false',
 			'disabled': 'false'
@@ -296,7 +296,75 @@ router.post('/console/disable', (req, res) => {
 		res.status(401).send("error");
 	});	
 })
+router.post('/console/setadminclaims', (req, res) => {
+	if(req.body.uid === 'n5sNJ8LquAftOMl4jEyyBOwBd5v2') {
+		return res.status(401).send("UNAUTHORIZED REQUEST!");
+	}	
+	var thisUid=req.body.uid;
+	var thisadmin=req.body.admin;
+	var i=0;
+	var docRef = db1.ref("users");
+	docRef.once("value", function(snapshot) {
+		snapshot.forEach(function(doc) {
+			var data=doc.val();
+			if (doc.val().uid.toString().trim() === thisUid.toString().trim())
+			{
+				var key = Object.keys(snapshot.val())[i];
+				admin.auth().updateUser(thisUid, {
+				  admin: thisadmin
+				}).catch((error) => {
+					res.status(401).send("error");
+				}).then((userRecord) => {
+					db1.ref("users/"+key).update({ 'admin': thisadmin });
+					//res.setHeader('Content-Type', 'application/json');
+					return res.status(200).send("done");
+				});
+			}
+			i++;
+		});	
+	}).catch((error) => {
+		//res.setHeader('Content-Type', 'application/json');
+		res.status(401).send("error");
+	});	
+})
 
+router.post('/console/setsupervisorclaims', (req, res) => {
+	console.log('000',req.body.uid)
+	if(req.body.uid === 'n5sNJ8LquAftOMl4jEyyBOwBd5v2') {
+		return res.status(401).send("UNAUTHORIZED REQUEST!");
+	}	
+	var thisUid=req.body.uid;
+	var thissuper=req.body.supervisor;
+	console.log(thisUid,' - ',thissuper);
+	var i=0;
+	var docRef = db1.ref("users");
+	docRef.once("value", function(snapshot) {
+		snapshot.forEach(function(doc) {
+			var data=doc.val();
+			if (doc.val().uid.toString().trim() === thisUid.toString().trim())
+			{
+				var key = Object.keys(snapshot.val())[i];
+				console.log('====',key);
+				admin.auth().updateUser(thisUid, {
+				  supervisor: thissuper
+				}).catch((error) => {
+					//res.setHeader('Content-Type', 'application/json');
+					console.log('error1====');
+					res.status(401).send("error");
+				}).then((userRecord) => {
+					db1.ref("users/"+key).update({ 'supervisor': thissuper });
+					//res.setHeader('Content-Type', 'application/json');
+					console.log('ok1====');
+					return res.status(200).send("done");
+				});
+			}
+			i++;
+		});	
+	}).catch((error) => {
+		console.log('error2====');
+		res.status(401).send("error");
+	});	
+})
 /* --------------------------------------------------------------------- */
 router.post('/console/linkproducts/', (req, res) => {
 	if (req.session.userId) {
