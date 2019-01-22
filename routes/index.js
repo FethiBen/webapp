@@ -12,7 +12,7 @@ var defaultApp = admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://bennia-itansfo.firebaseio.com"
 });
-
+var isAdmin;
 var db = admin.firestore();
 var db1 = admin.database();
 
@@ -27,7 +27,7 @@ router.use('/css', express.static(path.join(__dirname, 'public/css')));
 router.get('/', function(req, res, next) {
     console.log('-in routes-router.get * '+req.session.userId);
 	if (req.session.userId) {
-        isAdmin=req.session.userdroits;
+        //isAdmin=req.session.userdroits;
 		res.render('dashboard',{admin: isAdmin});
     }
     res.render('index', {page:'Home', menuId:'home'});
@@ -73,7 +73,7 @@ router.post('/sessionLogin/', function(req, res, next) {
                 req.session.userId = userKey;
                 req.session.userName = userName;
 				req.session.userdroits = userdroits;
-				isAdmin=req.session.userdroits;
+				isAdmin=userdroits;//req.session.userdroits;
 				const expiresIn = 60 * 60 * 24 * 5 * 1000;
 				admin.auth().createSessionCookie(idToken, {expiresIn})
 				var sessionCookie = req.cookies.__session || '';
