@@ -18,16 +18,17 @@ var db1 = admin.database();
 
 db.settings({ timestampsInSnapshots: true });
 var router = express.Router();
-console.log('-in routes-');
+//console.log('-in routes-');
 router.use(express.static(path.join(__dirname, '../public')));
 router.use('/img', express.static(path.join(__dirname, 'public/imgs')));
 router.use('/js', express.static(path.join(__dirname, 'public/javascripts')));
 router.use('/css', express.static(path.join(__dirname, 'public/css')));
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    console.log('-in routes-router.get * '+req.session.userId);
+   //console.log('-in routes-router.get * '+req.session.userId);
 	if (req.session.userId) {
         //isAdmin=req.session.userdroits;
+		//console.log(isAdmin,' = ',req.session.userdroits);
 		res.render('dashboard',{admin: isAdmin});
     }
     res.render('index', {page:'Home', menuId:'home'});
@@ -55,15 +56,15 @@ router.post('/sessionLogin/', function(req, res, next) {
 	var idToken = req.body.idToken;
     var database = db1;//firebase.database();
     var usersRef = database.ref('/users/');
-	console.log('In router.post user 1*2 ');
+	//console.log('In router.post user 1*2 ');
 	usersRef.orderByChild('email').equalTo(email).once('value').then(function(snapshot) {
         var user = snapshot.val();
-		console.log('In router.post user * '+user);
+		//console.log('In router.post user * '+user);
         if (user) {
             var userKey = Object.keys(user)[0];
             var userEmail = user[userKey].email;
             var userPassword = user[userKey].password;
-			console.log('In router.post user OK ');
+			//console.log('In router.post user OK ');
             if (userPassword == password) {
                 var firstName = user[userKey].firstname;
                 var lastName = user[userKey].lastname;
@@ -79,11 +80,11 @@ router.post('/sessionLogin/', function(req, res, next) {
 				var sessionCookie = req.cookies.__session || '';
 				 res.setHeader('Content-Type', 'application/json');
 				  res.write(JSON.stringify({status: 'success'}));
-				  console.log('session login Ok');
+				  //console.log('session login Ok');
 				  res.end();
 				 return res;
             } else {
-                console.log('session login No');
+                //console.log('session login No');
 				return res.status(401).send('UNAUTHORIZED REQUEST!');
             }
         } else {
@@ -95,7 +96,8 @@ router.post('/sessionLogin/', function(req, res, next) {
 /* --------------------------------------------------------------------- */
 router.get('/dashboard/', function(req, res, next) {
 	if (req.session.userId) {
-        isAdmin=req.session.userdroits;
+        //isAdmin=req.session.userdroits;
+		//console.log(isAdmin,' = ',req.session.userdroits);
 		return res.render('dashboard',{admin: isAdmin});
     }
     res.render('index', {page:'Home', menuId:'home'});
@@ -124,7 +126,7 @@ router.get('/signup/', function(req, res, next) {
 });
 /* --------------------------------------------------------------------- */
 router.post('/signup/', upload.array(), (req, res) => {
-	console.log('----------------------1');
+	//console.log('----------------------1');
 	admin.auth().createUser({
 		email: req.body.email,
 		emailVerified: false,
@@ -132,10 +134,10 @@ router.post('/signup/', upload.array(), (req, res) => {
 		displayName: req.body.username,
 		disabled: false
 	}).catch((error) => {
-		console.log('----------------------2e : ',error);
+		//console.log('----------------------2e : ',error);
 		res.send("error");
 	}).then((userRecord) => {
-		console.log('----------------------3');
+		//console.log('----------------------3');
 		var ref = db1.ref("/");
 		var itemsRef = ref.child("users");
 		var newItemRef = itemsRef.push();
@@ -152,22 +154,18 @@ router.post('/signup/', upload.array(), (req, res) => {
 			'supervisor': 'false',
 			'disabled': 'false'
 		}).then(function(docRef) {
-			console.log('----------------------4e');
-			console.log("Document written with ID: ", docRef.id);
-		})
-		.catch(function(error) {
-			console.log('----------------------5e');
-			console.error(error);
+			req.session.userdroits=false;
+			res.setHeader('Content-Type', 'application/json');
+			return res.status(200).send(JSON.stringify({status: 'success'}));
+		}).catch(function(error) {
+			res.setHeader('Content-Type', 'application/json');
+			return res.status(401).send(JSON.stringify({status: 'error'}));
 		});
-		console.log('----------------------6');
-		req.session.userdroits=false;
-		res.setHeader('Content-Type', 'application/json');
-		res.status(200).send(JSON.stringify({status: 'success'}));//JSON.stringify({status: 'success'});
 	})
 	.catch((error) => {
-		console.log('----------------------7e : ',error);
+		//console.log('----------------------7e : ',error);
 	    res.setHeader('Content-Type', 'application/json');
-		res.status(401).send(JSON.stringify({status: 'error'}));
+		return res.status(401).send(JSON.stringify({status: 'error'}));
 		//res.send("error");
 	});
 })
@@ -225,7 +223,7 @@ if (req.session.userId) {
 			snapshot.forEach(function(data) {
 				obj.push(data.val());
 			});		  
-			console.log(JSON.stringify(obj));
+			//console.log(JSON.stringify(obj));
 			res.setHeader('Content-Type', 'application/json');
 			res.status(200);
 			res.json(obj);
@@ -256,7 +254,7 @@ router.post('/console/getclients', (req, res) => {
 			snapshot.forEach(function(data) {
 				obj.push(data.val());
 			});		  
-			console.log(JSON.stringify(obj));
+			//console.log(JSON.stringify(obj));
 			res.setHeader('Content-Type', 'application/json');
 			res.status(200);
 			res.json(obj);
@@ -276,7 +274,7 @@ router.post('/console/disable', (req, res) => {
 	var docRef = db1.ref("users");
 	docRef.once("value", function(snapshot) {
 		snapshot.forEach(function(doc) {
-			console.log(doc.val().uid,' ? ',thisUid);
+			//console.log(doc.val().uid,' ? ',thisUid);
 			var data=doc.val();
 			if (doc.val().uid.toString().trim() === thisUid.toString().trim())
 			{
@@ -329,13 +327,13 @@ router.post('/console/setadminclaims', (req, res) => {
 })
 
 router.post('/console/setsupervisorclaims', (req, res) => {
-	console.log('000',req.body.uid)
+	//console.log('000',req.body.uid)
 	if(req.body.uid === 'n5sNJ8LquAftOMl4jEyyBOwBd5v2') {
 		return res.status(401).send("UNAUTHORIZED REQUEST!");
 	}	
 	var thisUid=req.body.uid;
 	var thissuper=req.body.supervisor;
-	console.log(thisUid,' - ',thissuper);
+	//console.log(thisUid,' - ',thissuper);
 	var i=0;
 	var docRef = db1.ref("users");
 	docRef.once("value", function(snapshot) {
@@ -344,27 +342,28 @@ router.post('/console/setsupervisorclaims', (req, res) => {
 			if (doc.val().uid.toString().trim() === thisUid.toString().trim())
 			{
 				var key = Object.keys(snapshot.val())[i];
-				console.log('====',key);
+				//console.log('====',key);
 				admin.auth().updateUser(thisUid, {
 				  supervisor: thissuper
 				}).catch((error) => {
 					//res.setHeader('Content-Type', 'application/json');
-					console.log('error1====');
+					//console.log('error1====');
 					res.status(401).send("error");
 				}).then((userRecord) => {
 					db1.ref("users/"+key).update({ 'supervisor': thissuper });
 					//res.setHeader('Content-Type', 'application/json');
-					console.log('ok1====');
+					//console.log('ok1====');
 					return res.status(200).send("done");
 				});
 			}
 			i++;
 		});	
 	}).catch((error) => {
-		console.log('error2====');
+		//console.log('error2====');
 		res.status(401).send("error");
 	});	
 })
+
 /* --------------------------------------------------------------------- */
 router.post('/console/linkproducts/', (req, res) => {
 	if (req.session.userId) {
@@ -380,24 +379,24 @@ router.post('/console/addlink', (req, res) => {
 		var d = [];var _ref = [];
 		var refUid = req.body.client_uid;
 		var refDev = req.body.device_ref;
-		console.log(refUid,' - ',refDev);
+		//console.log(refUid,' - ',refDev);
 		var ref = db1.ref("/");
 		var itemsRef = ref.child("linked_device");
 		itemsRef.orderByChild('device_ref').equalTo(refDev).once('value').then(function(snapshot) {
-			console.log('1');
+			//console.log('1');
 			snapshot.forEach(function(doc) {
-				console.log('2');
+				//console.log('2');
 				if(doc.val().client_uid == refUid) {
 					_ref.push(doc.val());
 				}
 			});
-			console.log('3');
+			//console.log('3');
 			var temp = true;
 			_ref.forEach(doc => {
 				temp = false
 				return res.status(403).send('Device already linked!').end();
 			})
-			console.log('4');
+			//console.log('4');
 			
 			var ts_hms = new Date();
 			var thisTimeIs=ts_hms.getFullYear() + '-' + 
@@ -440,7 +439,7 @@ router.post('/console/getproducts', (req, res) => {
 				dic['docID'] = data.key;
 				obj.push(dic);
 			});		  
-			console.log(JSON.stringify(obj));
+			//console.log(JSON.stringify(obj));
 			res.setHeader('Content-Type', 'application/json');
 			res.status(200);
 			res.json(obj);
@@ -475,10 +474,10 @@ router.post('/console/deletelink', upload.array(), (req, res) => {
 			{
 				var key = Object.keys(snapshot.val())[i];
 				db1.ref("linked_device/"+key).remove().then(function() {
-					console.log("Remove succeeded.")
+					//console.log("Remove succeeded.")
 					return res.status(200).send("done");
 				  }).catch(function(error) {
-					console.log("Remove failed: " + error.message)
+					//console.log("Remove failed: " + error.message)
 					return res.status(401).send(error);
 				  });
 			}
@@ -536,7 +535,7 @@ router.post('/getmessages/', (req, res) => {
 
 	var docRef1 = db1.ref("Messages");
 	docRef1.once("value", function(snapshot) {
-		console.log(snapshot.key);
+		//console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
 			if(doc.val().device_ref == devRef) {
 				d.push(doc.val());
@@ -555,7 +554,7 @@ router.post('/getlatestdata/', upload.array(), (req, res) => {
 
 	var docRef1 = db1.ref("data");
 	docRef1.once("value", function(snapshot) {
-		console.log(snapshot.key);
+		//console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
 			if(doc.val().device_ref == devRef) {
 				d.push(doc.val());
@@ -612,7 +611,7 @@ router.post('/getparameters/', upload.array(), (req, res) => {
 
 	var docRef1 = db1.ref("parameters");
 	docRef1.once("value", function(snapshot) {
-		console.log(snapshot.key);
+		//console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
 			if(doc.val().device_ref == devRef) {
 				d.push(doc.val());
@@ -631,7 +630,7 @@ router.post('/getdeviceData/', (req, res) => {
 	var devRef = req.body.device_ref;
 	var docRef1 = db1.ref("data");
 	docRef1.once("value", function(snapshot) {
-		console.log(snapshot.key);
+		//console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
 			if(doc.val().device_ref == devRef) {
 				d.push(doc.val());
@@ -654,7 +653,7 @@ router.post('/getdatedata/', upload.array(), (req, res) => {
 	var devRef = req.body.device_ref;
 	var docRef1 = db1.ref("data");
 	docRef1.once("value", function(snapshot) {
-		console.log(snapshot.key);
+		//console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
 			if(doc.val().device_ref == devRef) {
 				d.push(doc.val());
@@ -792,9 +791,9 @@ function compareData(obj) {
 
 
 async function checkData(obj) {
-	console.log("data test started")
+	//console.log("data test started")
 	compareData(obj).then(data => {
-		console.log(data);
+		//console.log(data);
 		if(data.status) {
 			d = {
 				'msg': data.msg,
@@ -830,7 +829,7 @@ router.post('/setdata/', (req, res) => {
 		var itemsRef = ref.child("data");
 		var newItemRef = itemsRef.push();
 		newItemRef.set(obj).then(function(docRef) {
-			console.log('----------------------4e');
+			//console.log('----------------------4e');
 			console.log("Document written");
 			checkData(obj).then(data => {
 				return res.status(200).send("done");
@@ -840,7 +839,7 @@ router.post('/setdata/', (req, res) => {
 			});
 		})
 		.catch(function(error) {
-			console.log('----------------------5e');
+			//console.log('----------------------5e');
 			console.error(error);
 		});	
 })
@@ -896,7 +895,7 @@ router.post('/devicesub/', upload.array(), (req, res) => {
 	var devRef = req.body.client_uid;
 	var docRef1 = db1.ref("linked_device");
 	docRef1.once("value", function(snapshot) {
-		console.log(snapshot.key);
+		//console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
 			//if(doc.val().client_uid == devRef) {
 				d.push(doc.val().device_ref);//d.push(doc.val());
@@ -981,7 +980,7 @@ router.get('/settings/', (req, res) => {
 });
 /* --------------------------------------------------------------------- */
 router.post('/settings/', (req, res) => {
-	console.log('in Post Settings');
+	//console.log('in Post Settings');
 	res.render('templates/settings');
 });
 /* --------------------------------------------------------------------- */
