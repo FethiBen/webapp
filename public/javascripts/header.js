@@ -208,7 +208,7 @@ function sendEmailVerification() {
   firebase.auth().currentUser.sendEmailVerification().then(function() {
     // Email Verification sent!
     // [START_EXCLUDE]
-    alert("Verification email sent!");
+    //alert("Verification email sent!");
     return true;
     // [END_EXCLUDE]
   });
