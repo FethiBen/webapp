@@ -52,11 +52,11 @@ $(document ).ready(function() {
       $("#profile-menu #username").text(displayName);
       $("#profile-menu #useremail").text(email);
       // [START_EXCLUDE]
-      if (!emailVerified) {
+      /*if (!emailVerified) {
         sendEmailVerification();
         console.log("not verified");
         $("#alert").show();
-      }
+      }*/
       // [END_EXCLUDE]
     } else {
       // User is signed out.
