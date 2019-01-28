@@ -113,7 +113,7 @@ $( document ).ready(function() {
 	  	$("nav").css({"position": "fixed", "top": "0px", "background-color": "#343a40"});
 	  }
 	  else {
-	  	$("nav").css({"position": "relative", "background-color": "transparent"});
+	  	$("nav").css({"position": "relative", "background-color": "#4A83E1"});
 	  }
 	  if (winScroll > 60) {
 	  	document.getElementById("myBar").style.visibility = "visible";
