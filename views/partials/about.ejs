@@ -18,20 +18,11 @@
 </div>
 <script>
 $(document).ready(function(){
-$("#rmcontact").on('click', function () {
-		var fname=	document.getElementById('fname');
+	$(document).on('click',"button#rmcontact", function () {
+		var fname=	$('form#mrsend').find('input#fname');
 		fname.focus();
 		return false;
-		
-		if ($("body").hasClass("slow-wind")) {
-			$("body").removeClass("slow-wind");
-			$("#switch").removeClass("switched");
-		}
-		else {
-			$("body").addClass("slow-wind");
-			$("#switch").addClass("switched");
-
-		}
 	});
+
 });
 </script>
