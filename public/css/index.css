@@ -279,9 +279,9 @@ nav {
   width: 100%;
   z-index: 16;
   border-bottom:1px solid #fff;
--webkit-box-shadow: 0px 10px 5px 0px rgba(151,183,236,0.6);
--moz-box-shadow: 0px 10px 5px 0px rgba(151,183,236,0.6);
-box-shadow: 0px 10px 5px 0px rgba(151,183,236,0.6);
+-webkit-box-shadow: 0px 10px 5px 0px rgba(151,183,236,0.75);
+-moz-box-shadow: 0px 10px 5px 0px rgba(151,183,236,0.75);
+box-shadow: 0px 10px 5px 0px rgba(151,183,236,0.75);
 }
 nav a {
     color: white !important;
