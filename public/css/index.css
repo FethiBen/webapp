@@ -342,7 +342,7 @@ section {
     left: 50%;
     transform: translate(-50%, -150%);
     color: white;
-    background-color: rgba(252,178,89, 0.75);
+    background-color: rgba(73,164,235, 0.75);
     z-index: 10;
 }
 #tri {
