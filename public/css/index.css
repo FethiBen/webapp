@@ -356,6 +356,7 @@ section {
   border-color: #2467D7  transparent transparent transparent;
 }
 #features {
+  height:0px !important;
 }
 
 #technology {
