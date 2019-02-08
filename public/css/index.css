@@ -166,7 +166,7 @@ header {
 
   /* Full height */
   width: 100%;
-  height: 85%;
+  height: 90%;
 
   /* Center and scale the image nicely */
   background-position: center;
@@ -338,7 +338,7 @@ section {
     text-align: center;
     position: absolute;
     width: 100%;
-    top: 70%;
+    top: 90% !important;
     left: 50%;
     transform: translate(-50%, -150%);
     color: white;
