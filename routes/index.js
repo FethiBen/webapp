@@ -547,7 +547,8 @@ router.post('/getmessages/', (req, res) => {
 		return res.status(403).send('Could Not Get Devices');
 	})
 })
-router.post('/getlatestdata/', upload.array(), (req, res) => {
+//upload.array(), 
+router.post('/getlatestdata/', (req, res) => {
 	
 	var d = [];	
 	var devRef = req.body.device_ref;
