@@ -125,7 +125,7 @@ router.get('/signup/', function(req, res, next) {
     res.redirect('/signup/');
 });
 /* --------------------------------------------------------------------- */
-router.post('/signup/', upload.array(), (req, res) => {
+router.post('/signup/', (req, res) => {
 	//console.log('----------------------1');
 	admin.auth().createUser({
 		email: req.body.email,
@@ -463,7 +463,7 @@ router.post('/console/updateproduct', (req, res) => {
 	}
 })
 /* --------------------------------XXX------------------------------------- */
-router.post('/console/deletelink', upload.array(), (req, res) => {
+router.post('/console/deletelink', (req, res) => {
 	if (req.session.userId) {
 	var thisUid = req.body.docID;
 	var docRef = db1.ref("linked_device");
@@ -571,7 +571,7 @@ router.post('/getlatestdata/', (req, res) => {
 	
 	
 })
-router.post('/setprameters/', upload.array(), (req, res) => {
+router.post('/setprameters/', (req, res) => {
 		obj = req.body
 		var ref = db1.ref("/");
 		var itemsRef = ref.child("parameters");
@@ -607,7 +607,7 @@ router.post('/getUserDevices/', (req, res) => {
 	
 })
 
-router.post('/getparameters/', upload.array(), (req, res) => {
+router.post('/getparameters/', (req, res) => {
 	var d = [];
 	var devRef = req.body.device_ref;
 
@@ -649,7 +649,7 @@ router.post('/getdeviceData/', (req, res) => {
 	
 })
 
-router.post('/getdatedata/', upload.array(), (req, res) => {
+router.post('/getdatedata/', (req, res) => {
 
 	var d = [];
 	var devRef = req.body.device_ref;
@@ -851,7 +851,7 @@ router.post('/setdata/', (req, res) => {
 **
 */
 
-router.post('/setToken/', upload.array(), (req, res) => {
+router.post('/setToken/', (req, res) => {
 
 	var thisUid=req.body.client_uid;
 	var thisToken=req.body.tokenId;
@@ -892,7 +892,7 @@ router.get('/devicesub/', (req, res) => {
 **		return device_ref of the User devices
 **
 */
-router.post('/devicesub/', upload.array(), (req, res) => {
+router.post('/devicesub/', (req, res) => {
 	var d = [];
 	var devRef = req.body.client_uid;
 	var docRef1 = db1.ref("linked_device");
