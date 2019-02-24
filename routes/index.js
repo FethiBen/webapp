@@ -554,7 +554,8 @@ router.post('/getlatestdata/', (req, res) => {
 	var devRef = req.body.device_ref;
 
 	var docRef1 = db1.ref("data");
-	docRef1.once("value", function(snapshot) {
+	//docRef1.once("value", function(snapshot) {
+	docRef1.orderByKey().limitToLast(4).once("value", function(snapshot) {
 		//console.log(snapshot.key);
 		snapshot.forEach(function(doc) {
 			if(doc.val().device_ref == devRef) {
